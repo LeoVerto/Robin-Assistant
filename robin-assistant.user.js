@@ -2,14 +2,27 @@
 // @name        Robin Assistant
 // @namespace   com.github.leoverto
 // @include     https://www.reddit.com/robin/
-// @version     1
+// @version     2
 // @author      LeoVerto
 // @grant       none
 // ==/UserScript==
 
+function clearSpam() {
+  var blacklist = ["autovoter","staying","group to stay","pasta","automatically voted","stayers are betrayers","stayers aint players","mins remaining. status",">>>>>>>>>>>>>>>>>>>>>>>","<<<<<<<<<<<<<<<<<<<<<<","growing is all we know","f it ends on you","timecube"];
+  var messages = $(".robin-message");
+  for (i = 0; i < messages.length; i++) {
+    for (o = 0; o < blacklist.length; o++) {
+      if (messages[i].innerHTML.toLowerCase().search(blacklist[o]) != -1) {
+        messages[i].remove();
+        break;
+      }
+    }
+  }
+}
+
 function sendMessage(msg) {
-  document.getElementsByClassName("text-counter-input")[0].value = msg;
-  document.getElementById("robinSendMessage").submit();
+  $(".text-counter-input")[0].value = msg;
+  $(".text-counter-input")[0].nextSibling.click();
 }
 
 function addOptions() {
@@ -24,10 +37,10 @@ function addOptions() {
   disableVoteMsgs.appendChild(checkbox);
   disableVoteMsgs.appendChild(description);
 
-  document.getElementById("robinDesktopNotifier").appendChild(disableVoteMsgs);
+  $("#robinDesktopNotifier").appendChild(disableVoteMsgs);
 }
 
 setTimeout(function () {
-  document.getElementsByClassName("robin--vote-class--increase")[0].click();
+  $(".robin--vote-class--increase")[0].click();
   console.log("WE SHALL GROW!");
 }, 10000);
