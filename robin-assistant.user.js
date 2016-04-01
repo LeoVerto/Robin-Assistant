@@ -3,7 +3,7 @@
 // @namespace   com.github.leoverto
 // @include     https://www.reddit.com/robin/
 // @version     2
-// @author      LeoVerto
+// @author      LeoVerto, Wiiplay123
 // @grant       none
 // ==/UserScript==
 
@@ -25,8 +25,9 @@ function sendMessage(msg) {
   $(".text-counter-input")[0].nextSibling.click();
 }
 
+// Custom options
 function addOptions() {
-  var disableVoteMsgs = createCheckbox("disable-vote-msgs", "Disable Vote Messages", true, );
+  var disableVoteMsgs = createCheckbox("disable-vote-msgs", "Disable Vote Messages", true, filterVoteMsgs);
 
   document.getElementById("robinDesktopNotifier").appendChild(disableVoteMsgs);
 }
@@ -50,12 +51,14 @@ function createCheckbox(name, description, checked, listener) {
 
 addOptions();
 
+// Filters
 function filterVoteMsgs(event) {
   if (event !== undefined) {
     // ToDo
   }
 }
 
+// Auto-grow
 setTimeout(function () {
   $(".robin--vote-class--increase")[0].click();
   console.log("WE SHALL GROW!");
