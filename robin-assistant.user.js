@@ -12,6 +12,21 @@ function sendMessage(msg) {
   document.getElementById("robinSendMessage").submit();
 }
 
+function addOptions() {
+  var disableVoteMsgs = document.createElement("label");
+
+  var checkbox = document.createElement("input");
+  checkbox.name = "disable-vote-msgs";
+  checkbox.type = "checkbox";
+
+  var description = document.createTextNode("Disable Vote Messages");
+
+  disableVoteMsgs.appendChild(checkbox);
+  disableVoteMsgs.appendChild(description);
+
+  document.getElementById("robinDesktopNotifier").appendChild(disableVoteMsgs);
+}
+
 setTimeout(function () {
   document.getElementsByClassName("robin--vote-class--increase")[0].click();
   console.log("WE SHALL GROW!");
