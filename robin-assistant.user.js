@@ -28,10 +28,17 @@ function sendMessage(msg) {
 
 // Custom options
 function addOptions() {
+  // Remove possible existing custom options
+  $("#customOptions").remove();
+
+  var customOptions = document.createElement("div");
+  customOptions.id = "customOptions";
   var disableVoteMsgs = createCheckbox("disable-vote-msgs", "Disable Vote Messages", true, filterVoteMsgs);
 
-  document.getElementById("robinDesktopNotifier").appendChild(disableVoteMsgs);
+  document.getElementById("robinDesktopNotifier").appendChild(customOptions);
+  document.getElementById("customOptions").appendChild(disableVoteMsgs);
 }
+
 
 function createCheckbox(name, description, checked, listener) {
   var label = document.createElement("label");
