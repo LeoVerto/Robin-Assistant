@@ -2,13 +2,14 @@
 // @name        Robin Assistant
 // @namespace   com.github.leoverto
 // @include     https://www.reddit.com/robin/
+// @include     https://www.reddit.com/robin
 // @version     2
 // @author      LeoVerto, Wiiplay123
 // @grant       none
 // ==/UserScript==
 
 function clearSpam() {
-  var blacklist = ["autovoter","staying","group to stay","pasta","automatically voted","stayers are betrayers","stayers aint players","mins remaining. status",">>>>>>>>>>>>>>>>>>>>>>>","<<<<<<<<<<<<<<<<<<<<<<","growing is all we know","f it ends on you","timecube"];
+  var blacklist = ["","autovoter","staying","group to stay","pasta","automatically voted","stayers are betrayers","stayers aint players","mins remaining. status",">>>>>>>>>>>>>>>>>>>>>>>","<<<<<<<<<<<<<<<<<<<<<<","growing is all we know","f it ends on you","timecube"];
   var messages = $(".robin-message");
   for (i = 0; i < messages.length; i++) {
     for (o = 0; o < blacklist.length; o++) {
