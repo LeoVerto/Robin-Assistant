@@ -26,18 +26,34 @@ function sendMessage(msg) {
 }
 
 function addOptions() {
-  var disableVoteMsgs = document.createElement("label");
+  var disableVoteMsgs = createCheckbox("disable-vote-msgs", "Disable Vote Messages", true, );
+
+  document.getElementById("robinDesktopNotifier").appendChild(disableVoteMsgs);
+}
+
+function createCheckbox(name, description, checked, listener) {
+  var label = document.createElement("label");
 
   var checkbox = document.createElement("input");
-  checkbox.name = "disable-vote-msgs";
+  checkbox.name = name;
   checkbox.type = "checkbox";
+  checkbox.onclick = listener;
+  $(checkbox).prop("checked", checked);
 
   var description = document.createTextNode("Disable Vote Messages");
 
-  disableVoteMsgs.appendChild(checkbox);
-  disableVoteMsgs.appendChild(description);
+  label.appendChild(checkbox);
+  label.appendChild(description);
 
-  $("#robinDesktopNotifier").appendChild(disableVoteMsgs);
+  return label;
+}
+
+addOptions();
+
+function filterVoteMsgs(event) {
+  if (event !== undefined) {
+    // ToDo
+  }
 }
 
 setTimeout(function () {
