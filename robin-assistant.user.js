@@ -10,7 +10,7 @@
 // ==/UserScript==
 
 var autoVote = true;
-var disableVoteMsgs = true;
+var filterVoteMsgs = true;
 var filterSpam = true;
 var filterNonAscii = true;
 var version = "1.11";
@@ -57,9 +57,10 @@ var spamBlacklist = ["spam the most used",
   "timecube", "\( ͡° ͜ʖ ͡°\)", "◕", "guys can you please not spam the chat",
   "ｍｅｍｅｓ ｏｆ ｃａｐｉｔａｌｉｓｍ", "𝐁𝐄𝐑𝐍𝐈𝐄 𝐒𝐀𝐍𝐃𝐌𝐀𝐍", "█▄█▄",  "卐",
   "spam the most used phrase", "moob hunter", "someone in chat annoying",
-  "cool ppl list", "can't beat me", "smexy", "my ruler", "bean",
+  "cool ppl list", "can't beat me", "smexy", "my ruler", "bean", "nsfw",
   "current standings", "numbers & tits", "numbers and tits", "nigglets",
-  "voting will end", "john madden", "peaman"
+  "voting will end", "john madden", "peaman", "turn off your bots",
+  "stay to win"
 ];
 
 var nonEnglishSpamRegex = "[^\x00-\x7F]+";
@@ -94,7 +95,7 @@ function addOptions() {
   var filters = "<b style=\"font-size: 13px;\">Filters</b>"
 
   var filterVotesOption = createCheckbox("filter-votes",
-    "Vote Messages", disableVoteMsgs, disableVoteMsgsListener, true);
+    "Vote Messages", filterVoteMsgs, disableVoteMsgsListener, true);
   var filterSpamOption = createCheckbox("filter-spam",
     "Common spam", filterSpam, filterSpamListener, true);
   var filterNonAsciiOption = createCheckbox("filter-nonascii",
@@ -156,7 +157,7 @@ function createCheckbox(name, description, checked, listener, counter) {
 // Listeners
 function disableVoteMsgsListener(event) {
   if (event !== undefined) {
-    disableVoteMsgs = $(event.target).is(":checked");
+    filterVoteMsgs = $(event.target).is(":checked");
   }
 }
 
@@ -340,7 +341,7 @@ var observer = new MutationObserver(function(mutations) {
       if ($(msg).hasClass("robin--message-class--action") && msgText.startsWith(
           "voted to ")) {
         updateVotes();
-        if (disableVoteMsgs) {
+        if (filterVoteMsgs) {
           $(msg).remove();
           console.log("Blocked spam message (Voting): " + message);
           filteredVoteCount += 1;
