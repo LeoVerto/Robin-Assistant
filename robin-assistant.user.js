@@ -236,7 +236,7 @@ var observer = new MutationObserver(function(mutations) {
     if ($(added).hasClass("robin-message")) {
       var msg = added;
       var msgText = $(msg).find(".robin-message--message").text();
-      console.log(msgText)
+      //console.log(msgText)
 
       // Highlight messages containing own user name
       var re = new RegExp(ownName, "i");
