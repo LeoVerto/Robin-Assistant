@@ -1,5 +1,5 @@
 # Robin-Assistant
-Robin-Assistant is a neat userscript for [reddit robin](https://www.reddit.com/robin/) adding features such as:
+Robin-Assistant is a neat userscript for [reddit robin](https://www.reddit.com/robin/). [Reddit post](https://www.reddit.com/r/sglafo/comments/4d1j68/robin_assistant_lightweight_and_featurerich/)
 
 ## Features
 
@@ -27,8 +27,7 @@ Next open this [raw url](https://github.com/LeoVerto/Robin-Assistant/raw/master/
 
 ## Planned
 
-* Add time left counter
 * Use online spam blacklist
 * Add ratelimit counter
 * Add single-user mute
-* Limit vote count polling (especially important in bigger rooms)
+* Auto-clear option
