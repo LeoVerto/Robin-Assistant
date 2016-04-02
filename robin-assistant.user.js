@@ -188,7 +188,7 @@ function howLongLeft() { // mostly from /u/Yantrio
   var soonMessageArray = $(".robin-message--message:contains('soon')");
   if (soonMessageArray.length > 0) {
     // for cases where it says "soon" instead of a time on page load
-    return "Soon";
+    return "Awaiting merge";
   }
 
   var remainingMessageArray = $(".robin-message--message:contains('approx')");
