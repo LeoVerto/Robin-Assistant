@@ -32,7 +32,8 @@ var votesLastUpdated = 0;
 var startTime = new Date();
 
 var spamBlacklist = [
-  "ຈل͜ຈ", "hail the", "autovoter", "staying","﷽"
+  "ຈل͜ຈ", "hail the", "autovoter", "staying",
+  "﷽",
   "group to stay", "pasta","autovote", "staying", "group to stay", "pasta",
   "automatically voted", "stayers are betrayers", "stayers aint players",
   "mins remaining. status", ">>>>>>>>>>>>>>>>>>>>>>>",
