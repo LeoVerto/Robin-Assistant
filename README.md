@@ -12,6 +12,7 @@ Robin-Assistant is a neat userscript for [reddit robin](https://www.reddit.com/r
 * Displays user count, tally and current vote outcome
 * Filter all messages containing non-ASCII characters
 * Automatically try to rejoin, if kicked out of robin (again, thanks to /u/rlemon)
+* Block a (currently hardcoded) list of users
 
 
 ## Installation
