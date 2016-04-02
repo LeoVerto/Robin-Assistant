@@ -4,7 +4,7 @@
 // @namespace   com.github.leoverto
 // @include     https://www.reddit.com/robin/
 // @include     https://www.reddit.com/robin
-// @version     1.7
+// @version     1.8
 // @author      LeoVerto, Wiiplay123, Getnamo
 // @grant       none
 // ==/UserScript==
@@ -12,7 +12,7 @@
 var autoVote = true;
 var disableVoteMsgs = true;
 var filterSpam = true;
-var version = "1.7";
+var version = "1.8";
 
 var ownName = $('.user a').text();
 var filteredSpamCount = 0;
@@ -36,8 +36,7 @@ var spamBlacklist = ["ຈل͜ຈ", "hail the", "autovoter", "staying",
   "TRUMPSBUTTPIRATES2016", "TRUMPSFIERYPOOPS2016",
   "ALL HAIL THE TACO BELL BOT", "#420",
   "<<<<<<<<<<<<<<<<<<<<<<", "growing is all we know", "f it ends on you",
-  "timecube", "( ͡° ͜ʖ ͡°)", "◕",
-  "guys can you please not spam the chat", "[nsfwrobinbot]", "[cat fact]"
+  "timecube", "\( ͡° ͜ʖ ͡°\)", "◕", "guys can you please not spam the chat"
 ];
 
 function rewriteCSS() {
