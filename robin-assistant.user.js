@@ -8,7 +8,8 @@
 // @grant       none
 // ==/UserScript==
 
-var disableVoteMsgs = false;
+var autoVote = true;
+var disableVoteMsgs = true;
 
 function clearSpam() {
   var blacklist = ["", "autovoter", "staying", "group to stay", "pasta",
@@ -40,8 +41,11 @@ function addOptions() {
 
   var customOptions = document.createElement("div");
   customOptions.id = "customOptions";
+
   var voteMsgOption = createCheckbox("disable-vote-msgs",
     "Disable Vote Messages", disableVoteMsgs, disableVoteMsgsListener);
+  var autoVoteOption = createCheckbox("auto-vote",
+    "Automatically vote Grow", autoVote, autoVoteListener);
 
   document.getElementById("robinDesktopNotifier").appendChild(customOptions);
   document.getElementById("customOptions").appendChild(voteMsgOption);
@@ -67,10 +71,16 @@ function createCheckbox(name, description, checked, listener) {
 
 addOptions();
 
-// Filters
+// Listeners
 function disableVoteMsgsListener(event) {
   if (event !== undefined) {
     disableVoteMsgs = $(event.target).is(":checked");
+  }
+}
+
+function autoVoteListener(event) {
+  if (event !== undefined) {
+    autoVote = $(event.target).is(":checked");
   }
 }
 
@@ -83,7 +93,7 @@ var observer = new MutationObserver(function(mutations) {
     if ($(added).hasClass("robin-message")) {
       var msg = added;
       var msgText = $(msg).find(".robin-message--message").text();
-      console.log(msgText)
+      //console.log(msgText)
 
       // Filter vote messages
       if (disableVoteMsgs
