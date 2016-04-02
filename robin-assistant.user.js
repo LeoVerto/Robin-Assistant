@@ -4,7 +4,7 @@
 // @namespace   com.github.leoverto
 // @include     https://www.reddit.com/robin/
 // @include     https://www.reddit.com/robin
-// @version     1.2
+// @version     1.3
 // @author      LeoVerto, Wiiplay123
 // @grant       none
 // ==/UserScript==
@@ -12,7 +12,7 @@
 var autoVote = true;
 var disableVoteMsgs = true;
 var filterSpam = true;
-var version = "1.2";
+var version = "1.3";
 
 var spamCount = 0;
 var voteCount = 0;
@@ -25,7 +25,7 @@ var spamBlacklist = ["autovote", "staying", "group to stay", "pasta",
 ];
 
 function rewriteCSS() {
-  $(".robin-chat--body").css({"height":"100%"});
+  $(".robin-chat--body").css({"height":"80vh"});
 }
 
 function sendMessage(msg) {
