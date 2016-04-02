@@ -5,11 +5,11 @@ Robin-Assistant is a neat userscript for [reddit robin](https://www.reddit.com/r
 
 * Automatically voting for growth
 * Hide vote messages
-* Filter common spam
+* Filter common spam & repetition spam
 * Configuration options for everything!
 * Chat and user list use the full available site height
 * Highlights messages containing your name (thanks to /u/rlemon, who made [this](https://gist.github.com/rlemon/cc13cb4c31861e5d5ba2a92bfc920aeb) great script)
-* Adds user count to user list
+* Displays user count, tally and current vote outcome
 
 
 ## Installation
