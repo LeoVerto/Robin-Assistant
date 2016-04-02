@@ -4,7 +4,7 @@
 // @namespace   com.github.leoverto
 // @include     https://www.reddit.com/robin/
 // @include     https://www.reddit.com/robin
-// @version     1.11
+// @version     1.12
 // @author      LeoVerto, Wiiplay123, Getnamo, K2L8M11N2
 // @grant       none
 // ==/UserScript==
@@ -13,7 +13,7 @@ var autoVote = true;
 var filterVoteMsgs = true;
 var filterSpam = true;
 var filterNonAscii = true;
-var version = "1.11";
+var version = "1.12";
 
 var ownName = $('.user a').text();
 var filteredSpamCount = 0;
