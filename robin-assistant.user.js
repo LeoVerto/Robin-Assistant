@@ -318,7 +318,6 @@ update();
 function fetchTimeIntervals() {
   var minArray = $(".robin-message--message:contains('approx')").text().match(
     "\\d+");
-
 }
 
 // Auto-grow
@@ -337,3 +336,13 @@ setInterval(function() {
     updateVotes();
   }
 }, 3000);
+
+// Try to join robin if not in a chat once a minute
+setInterval(function() {
+  if ($("#joinRobinContainer".length)) {
+    $("#joinRobinContainer.click()");
+    setTimeout(function() {
+      jQuery("#joinRobin").click();
+    }, 1000);
+  }
+}, 60000);
