@@ -140,6 +140,11 @@ function filterSpamListener(event) {
   }
 }
 
+function addMins(date, mins) {
+    var newDateObj = new Date(date.getTime() + mins * 60000);
+    return newDateObj;
+}
+
 function howLongLeft() { // mostly from /u/Yantrio
   var soonMessageArray = $( ".robin-message--message:contains('soon')");
   if(soonMessageArray.length > 0){
@@ -160,9 +165,9 @@ function howLongLeft() { // mostly from /u/Yantrio
   ).attr("datetime"));
   try {
     var endTime = addMins(time, message.match(/\d+/)[0]);
-    return Math.floor((endTime - new Date()) / 60 / 1000 * 10) / 10;
+    return (Math.floor((endTime - new Date()) / 60 / 1000 * 10) / 10) + " min";
   } catch (e) {
-    return "Soon";
+    return "Fail";
   }
 
   //grab the timestamp from the first post and then calc the difference using the estimate it gives you on boot
