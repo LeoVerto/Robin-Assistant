@@ -24,5 +24,5 @@ Next open this [raw url](https://github.com/LeoVerto/Robin-Assistant/raw/master/
 ## Planned
 
 * Add time left counter
-* Add blocked spam/vote message counter
 * Use online spam blacklist
+* Add ratelimit counter

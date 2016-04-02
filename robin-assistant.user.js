@@ -183,7 +183,7 @@ setTimeout(function() {
   }
 }, 10000);
 
-// Update once a second
+// Update every 3 seconds
 setInterval(function() {
   update();
 }, 3000);
