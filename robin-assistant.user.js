@@ -4,7 +4,7 @@
 // @namespace   com.github.leoverto
 // @include     https://www.reddit.com/robin/
 // @include     https://www.reddit.com/robin
-// @version     1.3
+// @version     1.4
 // @author      LeoVerto, Wiiplay123
 // @grant       none
 // ==/UserScript==
@@ -12,10 +12,12 @@
 var autoVote = true;
 var disableVoteMsgs = true;
 var filterSpam = true;
-var version = "1.3";
+var version = "1.4";
 
+var ownName = $('.user a').text();
 var spamCount = 0;
 var voteCount = 0;
+var userCount = 0;
 
 var spamBlacklist = ["autovote", "staying", "group to stay", "pasta",
   "automatically voted", "stayers are betrayers", "stayers aint players",
@@ -58,6 +60,11 @@ function addOptions() {
   $(customOptions).append(filterSpamOption);
 }
 
+function addInfo() {
+  var userCount = "<span style=\"font-size: 14px;\">Users here: <span id=\"user-count\">0</span></span>";
+
+  $("#robinUserList").prepend(userCount);
+}
 
 function createCheckbox(name, description, checked, listener, counter) {
   var label = document.createElement("label");
@@ -80,9 +87,6 @@ function createCheckbox(name, description, checked, listener, counter) {
 
   return label;
 }
-
-rewriteCSS();
-addOptions();
 
 // Listeners
 function disableVoteMsgsListener(event) {
@@ -119,6 +123,12 @@ function checkSpam(message) {
   return false;
 }
 
+// Generic updates
+function update() {
+  userCount = $("#robinUserList div").length;
+  updateCounter("user-count", userCount);
+}
+
 // Mutation observer for new messages
 var observer = new MutationObserver(function(mutations) {
   mutations.forEach(function(mutation) {
@@ -129,6 +139,11 @@ var observer = new MutationObserver(function(mutations) {
       var msg = added;
       var msgText = $(msg).find(".robin-message--message").text();
       //console.log(msgText)
+
+      // Highlight messages starting with own user name
+      if (msgText.startsWith(ownName)) {
+        $(msg).css({background:'rgba(255, 0, 0, 0.3)', color: '#242424'});
+      }
 
       // Filter vote messages
       if (disableVoteMsgs
@@ -150,7 +165,13 @@ observer.observe($("#robinChatMessageList").get(0), {
   childList: true
 });
 
+// Main run
 console.log("Robin-Assistant " + version + " enabled!");
+
+rewriteCSS();
+addOptions();
+addInfo();
+update();
 
 // Auto-grow
 setTimeout(function() {
@@ -159,3 +180,8 @@ setTimeout(function() {
     console.log("WE SHALL GROW!");
   }
 }, 10000);
+
+// Update once a second
+setInterval(function() {
+  update();
+}, 1000);
