@@ -3,7 +3,7 @@
 // @namespace   com.github.leoverto
 // @include     https://www.reddit.com/robin/
 // @include     https://www.reddit.com/robin
-// @version     1.0
+// @version     1.1
 // @author      LeoVerto, Wiiplay123
 // @grant       none
 // ==/UserScript==
@@ -11,6 +11,7 @@
 var autoVote = true;
 var disableVoteMsgs = true;
 var filterSpam = true;
+var version = "1.1";
 
 function sendMessage(msg) {
   $(".text-counter-input")[0].value = msg;
@@ -24,6 +25,9 @@ function addOptions() {
 
   var customOptions = document.createElement("div");
   customOptions.id = "customOptions";
+  customOptions.className = "robin-chat--sidebar-widget robin-chat--notification-widget";
+
+  var header = "<b style=\"font-size: 14px;\">Robin-Assistant " + version + " Configuration</b>"
 
   var autoVoteOption = createCheckbox("auto-vote",
     "Automatically vote Grow", autoVote, autoVoteListener);
@@ -32,10 +36,11 @@ function addOptions() {
   var filterSpamOption = createCheckbox("filter-spam",
     "Filter common spam", filterSpam, filterSpamListener);
 
-  document.getElementById("robinDesktopNotifier").appendChild(customOptions);
-  document.getElementById("customOptions").appendChild(autoVoteOption);
-  document.getElementById("customOptions").appendChild(voteMsgOption);
-  document.getElementById("customOptions").appendChild(filterSpamOption);
+  $(customOptions).insertAfter("#robinDesktopNotifier");
+  $(customOptions).append(header);
+  $(customOptions).append(autoVoteOption);
+  $(customOptions).append(voteMsgOption);
+  $(customOptions).append(filterSpamOption);
 }
 
 
@@ -124,10 +129,12 @@ observer.observe($("#robinChatMessageList").get(0), {
   childList: true
 });
 
-console.log("Robin-Assistant enabled!")
+console.log("Robin-Assistant " + version + " enabled!")
 
 // Auto-grow
 setTimeout(function() {
-  $(".robin--vote-class--increase")[0].click();
-  console.log("WE SHALL GROW!");
+  if (autoVote) {
+    $(".robin--vote-class--increase")[0].click();
+    console.log("WE SHALL GROW!");
+  }
 }, 10000);
