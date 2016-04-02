@@ -37,7 +37,7 @@ var spamBlacklist = [
   "mins remaining. status", ">>>>>", "#420", "◕_◕",
   "<<<<<", "growing is all we know", "f it ends on you",
   "timecube", "\( ͡° ͜ʖ ͡°\)", "◕", "guys can you please not spam the chat", "卐", "spam the most used phrase",
-  "moob hunter"
+  "moob hunter", "someone in chat annoying"
 ];
 
 function rewriteCSS() {
