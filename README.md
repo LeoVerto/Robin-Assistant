@@ -7,6 +7,7 @@ Robin-Assistant is a neat userscript for [reddit robin](https://www.reddit.com/r
 * Hide vote messages
 * Filter common spam
 * Configuration options for everything!
+* Chat and user list use the full available site height
 
 ## Installation
 

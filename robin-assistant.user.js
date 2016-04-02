@@ -1,5 +1,6 @@
 // ==UserScript==
 // @name        Robin Assistant
+// @description How may I be of assisante, sir?
 // @namespace   com.github.leoverto
 // @include     https://www.reddit.com/robin/
 // @include     https://www.reddit.com/robin
@@ -12,6 +13,17 @@ var autoVote = true;
 var disableVoteMsgs = true;
 var filterSpam = true;
 var version = "1.1";
+
+var spamBlacklist = ["autovoter", "staying", "group to stay", "pasta",
+  "automatically voted", "stayers are betrayers", "stayers aint players",
+  "mins remaining. status", ">>>>>>>>>>>>>>>>>>>>>>>",
+  "<<<<<<<<<<<<<<<<<<<<<<", "growing is all we know", "f it ends on you",
+  "timecube", "( ͡° ͜ʖ ͡°)"
+];
+
+function rewriteCSS() {
+  $(".robin-chat--body").css({"height":"auto"});
+}
 
 function sendMessage(msg) {
   $(".text-counter-input")[0].value = msg;
@@ -61,6 +73,7 @@ function createCheckbox(name, description, checked, listener) {
   return label;
 }
 
+rewriteCSS();
 addOptions();
 
 // Listeners
@@ -84,14 +97,8 @@ function filterSpamListener(event) {
 
 // Spam Filter
 function checkSpam(message) {
-  var blacklist = ["autovoter", "staying", "group to stay", "pasta",
-    "automatically voted", "stayers are betrayers", "stayers aint players",
-    "mins remaining. status", ">>>>>>>>>>>>>>>>>>>>>>>",
-    "<<<<<<<<<<<<<<<<<<<<<<", "growing is all we know", "f it ends on you",
-    "timecube"
-  ];
-  for (o = 0; o < blacklist.length; o++) {
-    if (message.toLowerCase().search(blacklist[o]) != -1) {
+  for (o = 0; o < spamBlacklist.length; o++) {
+    if (message.toLowerCase().search(spamBlacklist[o]) != -1) {
       return true;
     }
   }
