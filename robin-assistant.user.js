@@ -86,12 +86,15 @@ function addOptions() {
 
   var autoVoteOption = createCheckbox("auto-vote",
     "Automatically vote Grow", autoVote, autoVoteListener, false);
-  var voteMsgOption = createCheckbox("filter-votes",
-    "Filter Vote Messages", disableVoteMsgs, disableVoteMsgsListener, true);
+
+  var filters = "<b style=\"font-size: 13px;\">Filters</b>"
+
+  var filterVotesOption = createCheckbox("filter-votes",
+    "Vote Messages", disableVoteMsgs, disableVoteMsgsListener, true);
   var filterSpamOption = createCheckbox("filter-spam",
-    "Filter common spam", filterSpam, filterSpamListener, true);
+    "Common spam", filterSpam, filterSpamListener, true);
   var filterNonAsciiOption = createCheckbox("filter-nonascii",
-    "Filter non-ascii", filterNonAscii, filterNonAsciiListener, true);
+    "Non-ascii", filterNonAscii, filterNonAsciiListener, true);
 
   var userCounter =
     "<br><span style=\"font-size: 14px;\">Users here: <span id=\"user-count\">0</span></span>";
@@ -111,7 +114,8 @@ function addOptions() {
   $(customOptions).insertAfter("#robinDesktopNotifier");
   $(customOptions).append(header);
   $(customOptions).append(autoVoteOption);
-  $(customOptions).append(voteMsgOption);
+  $(customOptions).append(filters);
+  $(customOptions).append(filterVotesOption);
   $(customOptions).append(filterSpamOption);
   $(customOptions).append(filterNonAsciiOption);
   $(customOptions).append(userCounter);
@@ -222,6 +226,7 @@ function checkSpam(message) {
 
   if(filterNonAscii){
     if(message.match(nonEnglishSpamRegex)){
+      filteredNonAsciiCount += 1;
       updateCounter("filter-nonascii-counter", filteredNonAsciiCount);
       console.log("Blocked spam message (non-ASCII): " + message);
       return true;
