@@ -29,9 +29,6 @@ var votes = {
 
 var votesLastUpdated = 0;
 
-var spamBlacklist = [
-
-
 var startTime = new Date();
 
 var spamBlacklist = [
