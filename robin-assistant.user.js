@@ -363,6 +363,17 @@ observer.observe($("#robinChatMessageList").get(0), {
   childList: true
 });
 
+// Checks whether room name is not empty
+function checkError() {
+  if($(".robin-chat--room-name").text().length == 0) {
+    // Something went wrong, hit reload after a 10 to 20 seconds!
+    var timeout = Math.floor((Math.random() * 10 ) + 10);
+    setTimeout(function() {
+      window.location.reload();
+    }, timeout);
+  }
+}
+
 // Main run
 console.log("Robin-Assistant " + version + " enabled!");
 
@@ -391,6 +402,8 @@ setInterval(function() {
   // Update votes at least every 30 seconds
   if (Date.now - votesLastUpdated > 30000) {
     updateVotes();
+    // Also check if we're on an error page now
+    checkError();
   }
 }, 3000);
 
