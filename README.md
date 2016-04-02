@@ -14,6 +14,7 @@ Robin-Assistant is a neat userscript for [reddit robin](https://www.reddit.com/r
 * Automatically try to rejoin, if kicked out of robin (again, thanks to /u/rlemon)
 * Block a (currently hardcoded) list of users
 
+[![screenshot](https://github.com/LeoVerto/Robin-Assistant/raw/master/img/screenshot.png)](#screenshot)
 
 ## Installation
 
