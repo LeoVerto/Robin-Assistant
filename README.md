@@ -3,8 +3,8 @@ Robin-Assistant is a neat userscript for [reddit robin](https://www.reddit.com/r
 
 ## Features
 
-* Automatically vote for growth
-* Filter vote messages
+* **Auto-vote** for growth
+* **Filter vote messages**
 * Extensive **spam message and user blacklist**
 * Filter repetition spam, messages containing non-ASCII characters
 * Displays user count, tally and current vote outcome
