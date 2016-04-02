@@ -10,24 +10,7 @@
 
 var autoVote = true;
 var disableVoteMsgs = true;
-
-function clearSpam() {
-  var blacklist = ["", "autovoter", "staying", "group to stay", "pasta",
-    "automatically voted", "stayers are betrayers", "stayers aint players",
-    "mins remaining. status", ">>>>>>>>>>>>>>>>>>>>>>>",
-    "<<<<<<<<<<<<<<<<<<<<<<", "growing is all we know", "f it ends on you",
-    "timecube"
-  ];
-  var messages = $(".robin-message");
-  for (i = 0; i < messages.length; i++) {
-    for (o = 0; o < blacklist.length; o++) {
-      if (messages[i].innerHTML.toLowerCase().search(blacklist[o]) != -1) {
-        messages[i].remove();
-        break;
-      }
-    }
-  }
-}
+var filterSpam = true;
 
 function sendMessage(msg) {
   $(".text-counter-input")[0].value = msg;
@@ -42,13 +25,17 @@ function addOptions() {
   var customOptions = document.createElement("div");
   customOptions.id = "customOptions";
 
-  var voteMsgOption = createCheckbox("disable-vote-msgs",
-    "Disable Vote Messages", disableVoteMsgs, disableVoteMsgsListener);
   var autoVoteOption = createCheckbox("auto-vote",
     "Automatically vote Grow", autoVote, autoVoteListener);
+  var voteMsgOption = createCheckbox("disable-vote-msgs",
+    "Hide Vote Messages", disableVoteMsgs, disableVoteMsgsListener);
+  var filterSpamOption = createCheckbox("filter-spam",
+    "Filter common spam", filterSpam, filterSpamListener);
 
   document.getElementById("robinDesktopNotifier").appendChild(customOptions);
+  document.getElementById("customOptions").appendChild(autoVoteOption);
   document.getElementById("customOptions").appendChild(voteMsgOption);
+  document.getElementById("customOptions").appendChild(filterSpamOption);
 }
 
 
@@ -61,7 +48,7 @@ function createCheckbox(name, description, checked, listener) {
   checkbox.onclick = listener;
   $(checkbox).prop("checked", checked);
 
-  var description = document.createTextNode("Disable Vote Messages");
+  var description = document.createTextNode(description);
 
   label.appendChild(checkbox);
   label.appendChild(description);
@@ -84,6 +71,28 @@ function autoVoteListener(event) {
   }
 }
 
+function filterSpamListener(event) {
+  if (event !== undefined) {
+    filterSpam = $(event.target).is(":checked");
+  }
+}
+
+// Spam Filter
+function checkSpam(message) {
+  var blacklist = ["autovoter", "staying", "group to stay", "pasta",
+    "automatically voted", "stayers are betrayers", "stayers aint players",
+    "mins remaining. status", ">>>>>>>>>>>>>>>>>>>>>>>",
+    "<<<<<<<<<<<<<<<<<<<<<<", "growing is all we know", "f it ends on you",
+    "timecube"
+  ];
+  for (o = 0; o < blacklist.length; o++) {
+    if (message.toLowerCase().search(blacklist[o]) != -1) {
+      return true;
+    }
+  }
+  return false;
+}
+
 // Mutation observer for new messages
 var observer = new MutationObserver(function(mutations) {
   mutations.forEach(function(mutation) {
@@ -101,6 +110,13 @@ var observer = new MutationObserver(function(mutations) {
         && msgText.startsWith("voted to ")) {
           $(msg).remove();
         }
+
+      // Filter spam
+      if (filterSpam) {
+        if (checkSpam(msgText)) {
+          $(msg).remove();
+        }
+      }
     }
   });
 });
