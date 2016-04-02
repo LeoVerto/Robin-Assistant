@@ -4,7 +4,7 @@
 // @namespace   com.github.leoverto
 // @include     https://www.reddit.com/robin/
 // @include     https://www.reddit.com/robin
-// @version     1.4
+// @version     1.5
 // @author      LeoVerto, Wiiplay123
 // @grant       none
 // ==/UserScript==
@@ -12,7 +12,7 @@
 var autoVote = true;
 var disableVoteMsgs = true;
 var filterSpam = true;
-var version = "1.4";
+var version = "1.5";
 
 var ownName = $('.user a').text();
 var spamCount = 0;
@@ -141,8 +141,9 @@ var observer = new MutationObserver(function(mutations) {
       var msgText = $(msg).find(".robin-message--message").text();
       //console.log(msgText)
 
-      // Highlight messages starting with own user name
-      if (msgText.startsWith(ownName)) {
+      // Highlight messages containing own user name
+      var re = new RegExp(ownName,"i");
+      if (msgText.match(re)) {
         $(msg).css({background:'rgba(255, 0, 0, 0.3)', color: '#242424'});
       }
 
@@ -185,4 +186,4 @@ setTimeout(function() {
 // Update once a second
 setInterval(function() {
   update();
-}, 1000);
+}, 3000);
