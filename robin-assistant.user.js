@@ -3,7 +3,7 @@
 // @namespace   com.github.leoverto
 // @include     https://www.reddit.com/robin/
 // @include     https://www.reddit.com/robin
-// @version     2
+// @version     1.0
 // @author      LeoVerto, Wiiplay123
 // @grant       none
 // ==/UserScript==
@@ -123,6 +123,8 @@ var observer = new MutationObserver(function(mutations) {
 observer.observe($("#robinChatMessageList").get(0), {
   childList: true
 });
+
+console.log("Robin-Assistant enabled!")
 
 // Auto-grow
 setTimeout(function() {
