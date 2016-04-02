@@ -11,7 +11,12 @@
 var disableVoteMsgs = false;
 
 function clearSpam() {
-  var blacklist = ["","autovoter","staying","group to stay","pasta","automatically voted","stayers are betrayers","stayers aint players","mins remaining. status",">>>>>>>>>>>>>>>>>>>>>>>","<<<<<<<<<<<<<<<<<<<<<<","growing is all we know","f it ends on you","timecube"];
+  var blacklist = ["", "autovoter", "staying", "group to stay", "pasta",
+    "automatically voted", "stayers are betrayers", "stayers aint players",
+    "mins remaining. status", ">>>>>>>>>>>>>>>>>>>>>>>",
+    "<<<<<<<<<<<<<<<<<<<<<<", "growing is all we know", "f it ends on you",
+    "timecube"
+  ];
   var messages = $(".robin-message");
   for (i = 0; i < messages.length; i++) {
     for (o = 0; o < blacklist.length; o++) {
@@ -35,7 +40,8 @@ function addOptions() {
 
   var customOptions = document.createElement("div");
   customOptions.id = "customOptions";
-  var voteMsgOption = createCheckbox("disable-vote-msgs", "Disable Vote Messages", disableVoteMsgs, disableVoteMsgsListener);
+  var voteMsgOption = createCheckbox("disable-vote-msgs",
+    "Disable Vote Messages", disableVoteMsgs, disableVoteMsgsListener);
 
   document.getElementById("robinDesktopNotifier").appendChild(customOptions);
   document.getElementById("customOptions").appendChild(voteMsgOption);
@@ -68,8 +74,32 @@ function disableVoteMsgsListener(event) {
   }
 }
 
+// Mutation observer for new messages
+var observer = new MutationObserver(function(mutations) {
+  mutations.forEach(function(mutation) {
+    var added = mutation.addedNodes[0];
+
+    // Filters all new messages
+    if ($(added).hasClass("robin-message")) {
+      var msg = added;
+      var msgText = $(msg).find(".robin-message--message").text();
+      console.log(msgText)
+
+      // Filter vote messages
+      if (disableVoteMsgs
+        && $(msg).hasClass("robin--message-class--action")
+        && msgText.startsWith("voted to ")) {
+          $(msg).remove();
+        }
+    }
+  });
+});
+observer.observe($("#robinChatMessageList").get(0), {
+  childList: true
+});
+
 // Auto-grow
-setTimeout(function () {
+setTimeout(function() {
   $(".robin--vote-class--increase")[0].click();
   console.log("WE SHALL GROW!");
 }, 10000);
