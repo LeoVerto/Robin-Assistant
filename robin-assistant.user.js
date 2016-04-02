@@ -59,7 +59,7 @@ var spamBlacklist = ["spam the most used",
   "spam the most used phrase", "moob hunter", "someone in chat annoying",
   "cool ppl list", "can't beat me", "smexy", "my ruler", "bean",
   "current standings", "numbers & tits", "numbers and tits", "nigglets",
-  "voting will end"
+  "voting will end", "john madden", "peaman"
 ];
 
 var nonEnglishSpamRegex = "[^\x00-\x7F]+";
