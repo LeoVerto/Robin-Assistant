@@ -165,7 +165,10 @@ function howLongLeft() { // mostly from /u/Yantrio
   ).attr("datetime"));
   try {
     var endTime = addMins(time, message.match(/\d+/)[0]);
-    return (Math.floor((endTime - new Date()) / 60 / 1000 * 10) / 10) + " min";
+    var fraction = Math.floor((endTime - new Date()) / 60 / 1000 * 10) / 10;
+    var min = Math.floor(fraction);
+    var sec = Math.round((fraction - min) * 60);
+    return min + " m " + sec + " s";
   } catch (e) {
     return "Fail";
   }
