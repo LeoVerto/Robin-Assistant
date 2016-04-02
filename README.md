@@ -10,6 +10,8 @@ Robin-Assistant is a neat userscript for [reddit robin](https://www.reddit.com/r
 
 ## Installation
 
+The by far easiest way to install this script is by pasting it into your browser's developer console (`ctrl` + `shift` + `K` on **Firefox** or `ctrl` + `shift` + `J` on **Chrome**. This will however require you do do that again after every reload or growth.
+
 Install [Greasemonkey](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/) for **Firefox** or [Tampermonkey](https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo) for **Chrome** to use this userscript.
 Opera has built-in userscript support
 
