@@ -22,6 +22,7 @@ var userCount = 0;
 var spamBlacklist = ["autovote", "staying", "group to stay", "pasta",
   "automatically voted", "stayers are betrayers", "stayers aint players",
   "mins remaining. status", ">>>>>>>>>>>>>>>>>>>>>>>",
+  "TRUMPSBUTTPIRATES2016", "TRUMPSFIERYPOOPS2016", "ALL HAIL THE TACO BELL BOT",
   "<<<<<<<<<<<<<<<<<<<<<<", "growing is all we know", "f it ends on you",
   "timecube", "( ͡° ͜ʖ ͡°)"
 ];
