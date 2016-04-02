@@ -56,7 +56,7 @@ var spamBlacklist = ["spam the most used",
   "ｍｅｍｅｓ ｏｆ ｃａｐｉｔａｌｉｓｍ", "𝐁𝐄𝐑𝐍𝐈𝐄 𝐒𝐀𝐍𝐃𝐌𝐀𝐍", "█▄█▄",  "卐",
   "spam the most used phrase", "moob hunter", "someone in chat annoying",
   "cool ppl list", "can't beat me", "smexy", "my ruler", "bean", "current standings",
-  "numbers & tits", "numbers and tits
+  "numbers & tits", "numbers and tits"
 ];
 
 var nonEnglishSpamRegex = "[^\x00-\x7F]+";
