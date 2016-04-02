@@ -15,8 +15,8 @@ var filterSpam = true;
 var version = "1.7";
 
 var ownName = $('.user a').text();
-var filteredSpamCount = 0;
-var filteredVoteCount = 0;
+var spamCount = 0;
+var voteCount = 0;
 var userCount = 0;
 
 var votes = {
@@ -29,12 +29,18 @@ var votes = {
 
 var votesLastUpdated = 0;
 
-var spamBlacklist = ["ຈل͜ຈ", "hail the", "autovoter", "staying",
-  "group to stay", "pasta",
+var spamBlacklist = [
+
+
+var startTime = new Date();
+
+var spamBlacklist = [
+  "ຈل͜ຈ", "hail the", "autovoter", "staying",
+  "group to stay", "pasta","autovote", "staying", "group to stay", "pasta",
   "automatically voted", "stayers are betrayers", "stayers aint players",
   "mins remaining. status", ">>>>>>>>>>>>>>>>>>>>>>>",
   "TRUMPSBUTTPIRATES2016", "TRUMPSFIERYPOOPS2016",
-  "ALL HAIL THE TACO BELL BOT", "#420",
+  "ALL HAIL THE TACO BELL BOT", "#420","้","็","◕_◕",
   "<<<<<<<<<<<<<<<<<<<<<<", "growing is all we know", "f it ends on you",
   "timecube", "( ͡° ͜ʖ ͡°)", "◕",
   "guys can you please not spam the chat", "[nsfwrobinbot]", "[cat fact]"
@@ -66,8 +72,8 @@ function addOptions() {
 
   var autoVoteOption = createCheckbox("auto-vote",
     "Automatically vote Grow", autoVote, autoVoteListener, false);
-  var voteMsgOption = createCheckbox("filter-votes",
-    "Filter Vote Messages", disableVoteMsgs, disableVoteMsgsListener, true);
+  var voteMsgOption = createCheckbox("disable-vote-msgs",
+    "Hide Vote Messages", disableVoteMsgs, disableVoteMsgsListener, true);
   var filterSpamOption = createCheckbox("filter-spam",
     "Filter common spam", filterSpam, filterSpamListener, true);
 
@@ -82,8 +88,7 @@ function addOptions() {
   var voteAbstain =
     "<br><span style=\"font-size: 14px;\">Abstain: <span id=\"vote-abstain\">0</span></span>";
   var timer =
-    "<br><span style=\"font-size: 14px;\">Time Left: <span id=\"time-left\">0</span> min</span>";
-
+    "<br><span style=\"font-size: 14px;\">Time Left: <span id=\"time-left\">0</span></span>";
   var nextAction =
     "<br><i><span id=\"next-action\" style=\"font-size: 14px;\">Unknown</span></i>";
 
@@ -116,7 +121,7 @@ function createCheckbox(name, description, checked, listener, counter) {
   label.appendChild(description);
 
   if (counter) {
-    var counter = "&nbsp;Filtered: <span id=\"" + name + "-counter\">0</span>";
+    var counter = "&nbsp;Blocked: <span id=\"" + name + "-counter\">0</span>";
     $(label).append(counter);
   }
 
@@ -142,22 +147,37 @@ function filterSpamListener(event) {
   }
 }
 
+function addMins(date, mins) {
+    var newDateObj = new Date(date.getTime() + mins * 60000);
+    return newDateObj;
+}
+
 function howLongLeft() { // mostly from /u/Yantrio
-  var remainingMessageContainer = jQuery(
-    ".robin--user-class--system:contains('approx')");
-  if (remainingMessageContainer.length == 0) {
+  var soonMessageArray = $( ".robin-message--message:contains('soon')");
+  if(soonMessageArray.length > 0){
     // for cases where it says "soon" instead of a time on page load
-    return 0;
+    return "Soon";
   }
-  var message = jQuery(".robin-message--message", remainingMessageContainer).text();
+
+  var remainingMessageArray = $( ".robin-message--message:contains('approx')");
+
+  if (remainingMessageArray.length == 0) {
+    //This shouldn't happen
+    return "Unknown";
+  }
+
+  var message = remainingMessageArray.text();
   var time = new Date(jQuery(
     ".robin--user-class--system:contains('approx') .robin-message--timestamp"
   ).attr("datetime"));
   try {
     var endTime = addMins(time, message.match(/\d+/)[0]);
-    return Math.floor((endTime - new Date()) / 60 / 1000 * 10) / 10;
+    var fraction = Math.floor((endTime - new Date()) / 60 / 1000 * 10) / 10;
+    var min = Math.floor(fraction);
+    var sec = Math.round((fraction - min) * 60);
+    return min + " m " + sec + " s";
   } catch (e) {
-    return 0;
+    return "Fail";
   }
 
   //grab the timestamp from the first post and then calc the difference using the estimate it gives you on boot
@@ -169,17 +189,10 @@ function updateCounter(id, value) {
 
 // Spam Filter
 function checkSpam(message) {
-  // Check for 6 or more repetitions of the same character
-  if (message.search(/(.)\1{5,}/) != -1) {
-    filteredSpamCount += 1;
-    updateCounter("filter-spam-counter", filteredSpamCount);
-    return true;
-  }
-
   for (o = 0; o < spamBlacklist.length; o++) {
     if (message.toLowerCase().search(spamBlacklist[o]) != -1) {
-      filteredSpamCount += 1;
-      updateCounter("filter-spam-counter", filteredSpamCount);
+      spamCount += 1;
+      updateCounter("filter-spam-counter", spamCount);
       return true;
     }
   }
@@ -188,8 +201,7 @@ function checkSpam(message) {
 
 // Generic updates
 function update() {
-  userCount = $("#robinUserList div").length;
-  updateCounter("user-count", userCount);
+
   updateCounter("time-left", howLongLeft());
 
   // update vote counters
@@ -197,6 +209,10 @@ function update() {
   updateCounter("vote-stay", votes.stay);
   updateCounter("vote-abandon", votes.abandon);
   updateCounter("vote-abstain", votes.abstain);
+
+  userCount = votes.grow + votes.stay + votes.abandon + votes.abstain;
+  updateCounter("user-count", userCount);
+
   updateCounter("next-action", "Next round we will " + votes.action);
 }
 
@@ -208,6 +224,7 @@ function updateVotes() {
   }
 
   console.log("Updating vote tally...");
+  refs/remotes/origin/usercount
   jQuery.get("/robin/", function(a) {
     var start = "{" + a.substring(a.indexOf("\"robin_user_list\": ["));
     var end = start.substring(0, start.indexOf("}]") + 2) + "}";
@@ -221,7 +238,7 @@ function updateVotes() {
     votes.abandon = list.filter(function(voter) {
       return voter.vote === "ABANDON"
     }).length;
-    votes.abstain = list.filter(function(voter) {
+    votes.abstain = novoteCount = list.filter(function(voter) {
       return voter.vote === "NOVOTE"
     }).length;
 
@@ -266,12 +283,10 @@ var observer = new MutationObserver(function(mutations) {
       // Filter vote messages
       if ($(msg).hasClass("robin--message-class--action") && msgText.startsWith(
           "voted to ")) {
+        updateVotes();
         if (disableVoteMsgs) {
           $(msg).remove();
-          filteredVoteCount += 1;
-          updateCounter("filter-votes-counter", filteredVoteCount);
         }
-        updateVotes();
       }
 
       // Filter spam
@@ -294,6 +309,12 @@ rewriteCSS();
 addOptions();
 updateVotes();
 update();
+
+//Check for startup messages for timing
+function fetchTimeIntervals(){
+  var minArray = $( ".robin-message--message:contains('approx')").text().match("\\d+");
+
+}
 
 // Auto-grow
 setTimeout(function() {
