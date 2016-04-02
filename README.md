@@ -10,3 +10,4 @@ ToDo:
 
 * Add time left counter
 * Add blocked spam/vote message counter
+* Use online spam blacklist
