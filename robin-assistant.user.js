@@ -50,11 +50,13 @@ var manualThaiList = ["̍", "̎", "̄", "̅", "̿", "̑", "̆", "̐", "͒", "͗"
 var spamBlacklist = ["spam the most used",
   "ຈل͜ຈ", "hail the", "autovoter", "staying", "﷽", "group to stay", "pasta",
   "automatically voted", "stayers are betrayers", "stayers aint players",
-  "mins remaining. status", ">>>>>", "#420", "◕_◕",
-  "<<<<<", "growing is all we know", "f it ends on you",
+  "mins remaining. status", ">>>>", "TRUMPSBUTTPIRATES2016",
+  "TRUMPSFIERYPOOPS2016", "ALL HAIL THE TACO BELL BOT", "#420", "้", "็", "◕_◕",
+  "<<<<", "growing is all we know", "f it ends on you", "heil", "hitler",
   "timecube", "\( ͡° ͜ʖ ͡°\)", "◕", "guys can you please not spam the chat",
-  "卐", "spam the most used phrase",
-  "moob hunter", "someone in chat annoying"
+  "ｍｅｍｅｓ ｏｆ ｃａｐｉｔａｌｉｓｍ", "𝐁𝐄𝐑𝐍𝐈𝐄 𝐒𝐀𝐍𝐃𝐌𝐀𝐍", "█▄█▄",  "卐",
+  "spam the most used phrase", "moob hunter", "someone in chat annoying",
+  "cool ppl list"
 ];
 
 var nonEnglishSpamRegex = "[^\x00-\x7F]+";
