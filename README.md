@@ -9,3 +9,4 @@ Robin-Assistant is a neat userscript for [reddit robin](https://www.reddit.com/r
 ToDo:
 
 * Add time left counter
+* Add blocked spam/vote message counter
