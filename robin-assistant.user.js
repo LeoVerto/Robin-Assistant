@@ -34,7 +34,7 @@ var startTime = new Date();
 var spamBlacklist = [
     "ຈل͜ຈ", "hail the", "all hail", "autovote", "staying", "﷽", "group to stay", "pasta",
     "automatically voted", "stayers are betrayers", "stayers aint players",
-    "mins remaining. status", ">>>>>", "#420", ""้", "็", "◕_◕",
+    "mins remaining. status", ">>>>>", "#420", ""้", ""็", "◕_◕",
     "<<<<<", "growing is all we know", "f it ends on you",
     "timecube", "\( ͡° ͜ʖ ͡°\)", "◕", "guys can you please not spam the chat", "卐", "spam the most used phrase",
     "moob hunter"
