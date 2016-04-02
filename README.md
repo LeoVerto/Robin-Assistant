@@ -26,3 +26,5 @@ Next open this [raw url](https://github.com/LeoVerto/Robin-Assistant/raw/master/
 * Add time left counter
 * Use online spam blacklist
 * Add ratelimit counter
+* Add single-user mute
+* Limit vote count polling (especially important in bigger rooms)
