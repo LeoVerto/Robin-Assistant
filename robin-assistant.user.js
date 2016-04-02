@@ -62,6 +62,11 @@ var spamBlacklist = ["spam the most used",
   "voting will end"
 ];
 
+var blockedSpam = new Array(spamBlacklist.length);
+for (i = 0; i < blockedSpam.length; i++) {
+  blockedSpam[i] = 0;
+}
+
 var nonEnglishSpamRegex = "[^\x00-\x7F]+";
 
 function rewriteCSS() {
@@ -77,17 +82,27 @@ function sendMessage(msg) {
 
 // Custom options
 function addOptions() {
-  // Remove possible existing custom options
-  $("#customOptions").remove();
+  // Remove possible existing custom sidebar
+  $("#customSidebar").remove();
+
+  var customSidebar = document.createElement("div");
+  customSidebar.id = "customSidebar";
+  customSidebar.className = "robin-chat--sidebar";
+  $(customSidebar).css({
+    "border-right": "1px solid white",
+	"font-size": "14px"
+  });
 
   var customOptions = document.createElement("div");
   customOptions.id = "customOptions";
   customOptions.className =
     "robin-chat--sidebar-widget robin-chat--notification-widget";
 
-  var header = "<b style=\"font-size: 14px;\">Robin-Assistant " + version +
+  var header = "<b>Robin-Assistant " + version +
     " Configuration</b>"
-
+	
+  var doubleSpace = "<br><br>";
+	
   var autoVoteOption = createCheckbox("auto-vote",
     "Automatically vote Grow", autoVote, autoVoteListener, false);
 
@@ -101,34 +116,25 @@ function addOptions() {
     "Non-ascii", filterNonAscii, filterNonAsciiListener, true);
 
   var userCounter =
-    "<br><span style=\"font-size: 14px;\">Users here: <span id=\"user-count\">0</span></span>";
+    "<br><span>Users here: <span id=\"user-count\">0</span></span>";
   var voteGrow =
-    "<br><span style=\"font-size: 14px;\">Grow: <span id=\"vote-grow\">0</span></span>";
+    "<br><span>Grow: <span id=\"vote-grow\">0</span></span>";
   var voteStay =
-    "<br><span style=\"font-size: 14px;\">Stay: <span id=\"vote-stay\">0</span></span>";
+    "<br><span>Stay: <span id=\"vote-stay\">0</span></span>";
   var voteAbandon =
-    "<br><span style=\"font-size: 14px;\">Abandon: <span id=\"vote-abandon\">0</span></span>";
+    "<br><span>Abandon: <span id=\"vote-abandon\">0</span></span>";
   var voteAbstain =
-    "<br><span style=\"font-size: 14px;\">Abstain: <span id=\"vote-abstain\">0</span></span>";
+    "<br><span>Abstain: <span id=\"vote-abstain\">0</span></span>";
   var timer =
-    "<br><span style=\"font-size: 14px;\">Time Left: <span id=\"time-left\">0</span></span>";
+    "<br><span>Time Left: <span id=\"time-left\">0</span></span>";
   var nextAction =
-    "<br><i><span id=\"next-action\" style=\"font-size: 14px;\">Unknown</span></i>";
-
-  $(customOptions).insertAfter("#robinDesktopNotifier");
-  $(customOptions).append(header);
-  $(customOptions).append(autoVoteOption);
-  $(customOptions).append(filters);
-  $(customOptions).append(filterVotesOption);
-  $(customOptions).append(filterSpamOption);
-  $(customOptions).append(filterNonAsciiOption);
-  $(customOptions).append(userCounter);
-  $(customOptions).append(voteGrow);
-  $(customOptions).append(voteStay);
-  $(customOptions).append(voteAbandon);
-  $(customOptions).append(voteAbstain);
-  $(customOptions).append(nextAction);
-  $(customOptions).append(timer);
+    "<br><i><span id=\"next-action\">Unknown</span></i>";
+  var spamList =
+    "<div id=\"spam-list\" class=\"robin-chat robin-chat--sidebar-widget robin-chat--notification-widget\" style=\"overflow-y: scroll; height:100%;\"><span>No Spam Blocked</span></div>";
+  $(customSidebar).insertBefore(".robin-chat--sidebar");
+  $(customSidebar).append(customOptions);
+  $(customOptions).append(header,doubleSpace,autoVoteOption,filters,filterVotesOption,filterSpamOption,
+  filterNonAsciiOption,userCounter,voteGrow,voteStay,voteAbandon,voteAbstain,nextAction,timer,doubleSpace,spamList);
 }
 
 function createCheckbox(name, description, checked, listener, counter) {
@@ -248,6 +254,7 @@ function checkSpam(user, message) {
   for (o = 0; o < spamBlacklist.length; o++) {
     if (message.toLowerCase().search(spamBlacklist[o]) != -1) {
       filteredSpamCount += 1;
+	  blockedSpam[o] += 1;
       updateCounter("filter-spam-counter", filteredSpamCount);
       console.log("Blocked spam message (Blacklist): " + message);
       return true;
@@ -270,6 +277,20 @@ function update() {
   updateCounter("user-count", userCount);
 
   updateCounter("next-action", "Next round we will " + votes.action);
+  
+  var spamListString = "";
+  
+  for (i = 0; i < blockedSpam.length; i++) {
+   if (blockedSpam[i] > 0) {
+     spamListString = spamListString + "<div class=\"robin-room-participant\"><span>" + spamBlacklist[i] + ": " + blockedSpam[i] + "</span></div>";
+   }
+  }
+  
+  if (spamListString == "") {
+   spamListString = "<div class=\"robin-room-participant\"><span>No Spam Blocked</span></div>"; 
+  }
+  spamListString = "<b class=\"robin-room-participant\"><span>Spam Blocked:</span></b><br><br>" + spamListString;
+  $("#spam-list").html(spamListString);
 }
 
 // Triggered whenever someone votes
