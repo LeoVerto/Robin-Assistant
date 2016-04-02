@@ -27,13 +27,14 @@ var votes = {
   action: 'Unknown'
 }
 
-var spamBlacklist = ["autovoter", "staying", "group to stay", "pasta",
+var spamBlacklist = ["ຈل͜ຈ","hail the","autovoter", "staying", "group to stay", "pasta",
   "automatically voted", "stayers are betrayers", "stayers aint players",
   "mins remaining. status", ">>>>>>>>>>>>>>>>>>>>>>>",
   "TRUMPSBUTTPIRATES2016", "TRUMPSFIERYPOOPS2016",
   "ALL HAIL THE TACO BELL BOT", "#420",
   "<<<<<<<<<<<<<<<<<<<<<<", "growing is all we know", "f it ends on you",
-  "timecube", "( ͡° ͜ʖ ͡°)"
+  "timecube", "( ͡° ͜ʖ ͡°)","◕",
+  "guys can you please not spam the chat","[nsfwrobinbot]","[cat fact]"
 ];
 
 function rewriteCSS() {
