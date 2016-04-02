@@ -8,6 +8,8 @@
 // @grant       none
 // ==/UserScript==
 
+var disableVoteMsgs = false;
+
 function clearSpam() {
   var blacklist = ["","autovoter","staying","group to stay","pasta","automatically voted","stayers are betrayers","stayers aint players","mins remaining. status",">>>>>>>>>>>>>>>>>>>>>>>","<<<<<<<<<<<<<<<<<<<<<<","growing is all we know","f it ends on you","timecube"];
   var messages = $(".robin-message");
@@ -33,10 +35,10 @@ function addOptions() {
 
   var customOptions = document.createElement("div");
   customOptions.id = "customOptions";
-  var disableVoteMsgs = createCheckbox("disable-vote-msgs", "Disable Vote Messages", true, filterVoteMsgs);
+  var voteMsgOption = createCheckbox("disable-vote-msgs", "Disable Vote Messages", disableVoteMsgs, disableVoteMsgsListener);
 
   document.getElementById("robinDesktopNotifier").appendChild(customOptions);
-  document.getElementById("customOptions").appendChild(disableVoteMsgs);
+  document.getElementById("customOptions").appendChild(voteMsgOption);
 }
 
 
@@ -60,9 +62,9 @@ function createCheckbox(name, description, checked, listener) {
 addOptions();
 
 // Filters
-function filterVoteMsgs(event) {
+function disableVoteMsgsListener(event) {
   if (event !== undefined) {
-    // ToDo
+    disableVoteMsgs = $(event.target).is(":checked");
   }
 }
 
