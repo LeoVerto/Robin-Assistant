@@ -31,6 +31,20 @@ var votesLastUpdated = 0;
 
 var startTime = new Date();
 
+var manualThaiList = ["̍", "̎", "̄", "̅", "̿", "̑", "̆", "̐", "͒", "͗", "\
+", "͑", "̇", "̈", "̊", "͂", "̓", "̈́", "͊", "͋", "͌", "\
+", "̃", "̂", "̌", "͐", "̀", "́", "̋", "̏", "̒", "̓", "\
+", "̔", "̽", "̉", "ͣ", "ͤ", "ͥ", "ͦ", "ͧ", "ͨ", "ͩ", "\
+", "ͪ", "ͫ", "ͬ", "ͭ", "ͮ", "ͯ", "̾", "͛", "͆", "̚", "\
+", "̕", "̛", "̀", "́", "͘", "̡", "̢", "̧", "̨", "̴", "\
+", "̵", "̶", "͏", "͜", "͝", "͞", "͟", "͠", "͢", "̸", "\
+", "̷", "͡", "҉", "\
+", "̖", "̗", "̘", "̙", "̜", "̝", "̞", "̟", "̠", "̤", "\
+", "̥", "̦", "̩", "̪", "̫", "̬", "̭", "̮", "̯", "̰", "\
+", "̱", "̲", "̳", "̹", "̺", "̻", "̼", "ͅ", "͇", "͈", "\
+", "͉", "͍", "͎", "͓", "͔", "͕", "͖", "͙", "͚", "̣", "\
+"];
+
 var spamBlacklist = [
   "ຈل͜ຈ", "hail the", "autovoter", "staying", "﷽", "group to stay", "pasta",
   "automatically voted", "stayers are betrayers", "stayers aint players",
@@ -40,6 +54,8 @@ var spamBlacklist = [
   "<<<<<<<<<<<<<<<<<<<<<<", "growing is all we know", "f it ends on you",
   "timecube", "\( ͡° ͜ʖ ͡°\)", "◕", "guys can you please not spam the chat"
 ];
+
+var nonEnglishSpamRegex = "[^\x00-\x7F]+";
 
 function rewriteCSS() {
   $(".robin-chat--body").css({
@@ -187,6 +203,11 @@ function checkSpam(message) {
   // Check for 6 or more repetitions of the same character
   if (message.search(/(.)\1{5,}/) != -1) {
     filteredSpamCount += 1;
+    updateCounter("filter-spam-counter", filteredSpamCount);
+    return true;
+  }
+
+  if(message.match(nonEnglishSpamRegex)){
     updateCounter("filter-spam-counter", filteredSpamCount);
     return true;
   }
