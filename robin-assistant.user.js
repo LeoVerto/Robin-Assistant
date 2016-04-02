@@ -5,7 +5,7 @@
 // @include     https://www.reddit.com/robin/
 // @include     https://www.reddit.com/robin
 // @version     1.9
-// @author      LeoVerto, Wiiplay123, Getnamo
+// @author      LeoVerto, Wiiplay123, Getnamo, K2L8M11N2
 // @grant       none
 // ==/UserScript==
 
@@ -33,6 +33,7 @@ var votesLastUpdated = 0;
 
 var startTime = new Date();
 
+<<<<<<< Updated upstream
 var manualThaiList = ["̍", "̎", "̄", "̅", "̿", "̑", "̆", "̐", "͒", "͗", "\
 ", "͑", "̇", "̈", "̊", "͂", "̓", "̈́", "͊", "͋", "͌", "\
 ", "̃", "̂", "̌", "͐", "̀", "́", "̋", "̏", "̒", "̓", "\
@@ -49,12 +50,17 @@ var manualThaiList = ["̍", "̎", "̄", "̅", "̿", "̑", "̆", "̐", "͒", "͗"
 
 var spamBlacklist = ["spam the most used",
   "ຈل͜ຈ", "hail the", "autovoter", "staying", "﷽", "group to stay", "pasta",
+=======
+var spamBlacklist = [
+  "ຈل͜ຈ", "hail the", "all hail", "autovote", "staying", "﷽", "group to stay",
+  "pasta",
+>>>>>>> Stashed changes
   "automatically voted", "stayers are betrayers", "stayers aint players",
-  "mins remaining. status", ">>>>>>>>>>>>>>>>>>>>>>>",
-  "TRUMPSBUTTPIRATES2016", "TRUMPSFIERYPOOPS2016",
-  "ALL HAIL THE TACO BELL BOT", "#420", "้", "็", "◕_◕",
-  "<<<<<<<<<<<<<<<<<<<<<<", "growing is all we know", "f it ends on you",
-  "timecube", "\( ͡° ͜ʖ ͡°\)", "◕", "guys can you please not spam the chat"
+  "mins remaining. status", ">>>>>", "#420", "◕_◕",
+  "<<<<<", "growing is all we know", "f it ends on you",
+  "timecube", "\( ͡° ͜ʖ ͡°\)", "◕", "guys can you please not spam the chat",
+  "卐", "spam the most used phrase",
+  "moob hunter", "someone in chat annoying"
 ];
 
 var nonEnglishSpamRegex = "[^\x00-\x7F]+";
