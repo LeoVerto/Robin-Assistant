@@ -12,11 +12,13 @@
 var autoVote = true;
 var disableVoteMsgs = true;
 var filterSpam = true;
+var filterNonAscii = true;
 var version = "1.9";
 
 var ownName = $('.user a').text();
 var filteredSpamCount = 0;
 var filteredVoteCount = 0;
+var filteredNonAsciiCount = 0;
 var userCount = 0;
 
 var votes = {
@@ -87,6 +89,8 @@ function addOptions() {
     "Filter Vote Messages", disableVoteMsgs, disableVoteMsgsListener, true);
   var filterSpamOption = createCheckbox("filter-spam",
     "Filter common spam", filterSpam, filterSpamListener, true);
+  var filterNonAsciiOption = createCheckbox("filter-nonascii",
+    "Filter non-ascii", filterNonAscii, filterNonAsciiListener, true);
 
   var userCounter =
     "<br><span style=\"font-size: 14px;\">Users here: <span id=\"user-count\">0</span></span>";
@@ -108,6 +112,7 @@ function addOptions() {
   $(customOptions).append(autoVoteOption);
   $(customOptions).append(voteMsgOption);
   $(customOptions).append(filterSpamOption);
+  $(customOptions).append(filterNonAsciiOption);
   $(customOptions).append(userCounter);
   $(customOptions).append(voteGrow);
   $(customOptions).append(voteStay);
@@ -155,6 +160,12 @@ function autoVoteListener(event) {
 function filterSpamListener(event) {
   if (event !== undefined) {
     filterSpam = $(event.target).is(":checked");
+  }
+}
+
+function filterNonAsciiListener(event) {
+  if (event !== undefined) {
+    filterNonAscii = $(event.target).is(":checked");
   }
 }
 
@@ -207,9 +218,11 @@ function checkSpam(message) {
     return true;
   }
 
-  if(message.match(nonEnglishSpamRegex)){
-    updateCounter("filter-spam-counter", filteredSpamCount);
-    return true;
+  if(filterNonAscii){
+    if(message.match(nonEnglishSpamRegex)){
+      updateCounter("filter-nonascii-counter", filteredNonAsciiCount);
+      return true;
+    }
   }
 
   for (o = 0; o < spamBlacklist.length; o++) {
@@ -224,7 +237,6 @@ function checkSpam(message) {
 
 // Generic updates
 function update() {
-
   updateCounter("time-left", howLongLeft());
 
   // update vote counters
