@@ -23,7 +23,8 @@ var votes = {
   grow: 0,
   stay: 0,
   abandon: 0,
-  abstain: 0
+  abstain: 0,
+  action: 'Unknown'
 }
 
 var spamBlacklist = ["autovote", "staying", "group to stay", "pasta",
@@ -79,6 +80,9 @@ function addOptions() {
   var timer =
     "<br><span style=\"font-size: 14px;\">Time Left: <span id=\"time-left\">0</span> min</span>";
 
+  var nextAction =
+    "<br><i><span id=\"next-action\" style=\"font-size: 14px;\">Unknown</span></i>";
+
   $(customOptions).insertAfter("#robinDesktopNotifier");
   $(customOptions).append(header);
   $(customOptions).append(autoVoteOption);
@@ -89,6 +93,7 @@ function addOptions() {
   $(customOptions).append(voteStay);
   $(customOptions).append(voteAbandon);
   $(customOptions).append(voteAbstain);
+  $(customOptions).append(nextAction);
   $(customOptions).append(timer);
 }
 
@@ -181,6 +186,7 @@ function update() {
   updateCounter("vote-stay", votes.stay);
   updateCounter("vote-abandon", votes.abandon);
   updateCounter("vote-abstain", votes.abstain);
+  updateCounter("next-action", "Next round we will " + votes.action);
 }
 
 // Triggered whenever someone votes
@@ -201,6 +207,23 @@ function updateVotes() {
     votes.abstain = novoteCount = list.filter(function(voter) {
       return voter.vote === "NOVOTE"
     }).length;
+
+    var majority = userCount/2;
+    if(votes.grow>majority){
+      votes.action = "Grow";
+    }
+    else if(votes.stay>majority){
+      votes.action = "Stay";
+    }
+    else if(votes.abandon>majority){
+      votes.action = "Abandon";
+    }
+    else if(votes.abstain>majority){
+      votes.action = "Abstain";
+    }
+    else{
+      vote.action = "No majority";
+    }
   });
 }
 
@@ -227,7 +250,7 @@ var observer = new MutationObserver(function(mutations) {
       // Filter vote messages
       if ($(msg).hasClass("robin--message-class--action") && msgText.startsWith(
           "voted to ")) {
-        updateVote();
+        updateVotes();
         if (disableVoteMsgs) {
           $(msg).remove();
         }
@@ -258,7 +281,7 @@ update();
 setTimeout(function() {
   if (autoVote) {
     $(".robin--vote-class--increase")[0].click();
-    console.log("WE SHALL GROW!");
+    console.log("Voting grow!");
   }
 }, 10000);
 
