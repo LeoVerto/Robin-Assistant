@@ -220,7 +220,6 @@ function updateVotes() {
   }
 
   console.log("Updating vote tally...");
-  refs/remotes/origin/usercount
   jQuery.get("/robin/", function(a) {
     var start = "{" + a.substring(a.indexOf("\"robin_user_list\": ["));
     var end = start.substring(0, start.indexOf("}]") + 2) + "}";
