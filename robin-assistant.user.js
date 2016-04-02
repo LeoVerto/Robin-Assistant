@@ -4,15 +4,15 @@
 // @namespace   com.github.leoverto
 // @include     https://www.reddit.com/robin/
 // @include     https://www.reddit.com/robin
-// @version     1.5
-// @author      LeoVerto, Wiiplay123
+// @version     1.6
+// @author      LeoVerto, Wiiplay123, Getnamo
 // @grant       none
 // ==/UserScript==
 
 var autoVote = true;
 var disableVoteMsgs = true;
 var filterSpam = true;
-var version = "1.5";
+var version = "1.6";
 
 var ownName = $('.user a').text();
 var spamCount = 0;
@@ -22,7 +22,7 @@ var userCount = 0;
 var spamBlacklist = ["autovote", "staying", "group to stay", "pasta",
   "automatically voted", "stayers are betrayers", "stayers aint players",
   "mins remaining. status", ">>>>>>>>>>>>>>>>>>>>>>>",
-  "TRUMPSBUTTPIRATES2016", "TRUMPSFIERYPOOPS2016", "ALL HAIL THE TACO BELL BOT",
+  "TRUMPSBUTTPIRATES2016", "TRUMPSFIERYPOOPS2016", "ALL HAIL THE TACO BELL BOT", "#420",
   "<<<<<<<<<<<<<<<<<<<<<<", "growing is all we know", "f it ends on you",
   "timecube", "( ͡° ͜ʖ ͡°)"
 ];
@@ -54,18 +54,31 @@ function addOptions() {
   var filterSpamOption = createCheckbox("filter-spam",
     "Filter common spam", filterSpam, filterSpamListener, true);
 
+  var userCounter = "<br><span style=\"font-size: 14px;\">Users here: <span id=\"user-count\">0</span></span>";
+  var voteGrow = "<br><span style=\"font-size: 14px;\">Grow: <span id=\"vote-grow\">0</span></span>";
+  var voteStay = "<br><span style=\"font-size: 14px;\">Stay: <span id=\"vote-stay\">0</span></span>";
+  var voteAbandon = "<br><span style=\"font-size: 14px;\">Abandon: <span id=\"vote-abandon\">0</span></span>";
+  var voteAbstain = "<br><span style=\"font-size: 14px;\">Abstain: <span id=\"vote-abstain\">0</span></span>";
+  var timer = "<br><span style=\"font-size: 14px;\">Time Left: <span id=\"time-left\">0</span> min</span>";
+
   $(customOptions).insertAfter("#robinDesktopNotifier");
   $(customOptions).append(header);
   $(customOptions).append(autoVoteOption);
   $(customOptions).append(voteMsgOption);
   $(customOptions).append(filterSpamOption);
+  $(customOptions).append(userCounter);
+  $(customOptions).append(voteGrow);
+  $(customOptions).append(voteStay);
+  $(customOptions).append(voteAbandon);
+  $(customOptions).append(voteAbstain);
+  $(customOptions).append(timer);
 }
 
-function addInfo() {
+/*function addInfo() {
   var userCount = "<span style=\"font-size: 14px;\">Users here: <span id=\"user-count\">0</span></span>";
 
   $("#robinUserList").prepend(userCount);
-}
+}*/
 
 function createCheckbox(name, description, checked, listener, counter) {
   var label = document.createElement("label");
@@ -108,6 +121,24 @@ function filterSpamListener(event) {
   }
 }
 
+function howLongLeft() { // mostly from /u/Yantrio
+  var remainingMessageContainer = jQuery(".robin--user-class--system:contains('approx')");
+  if (remainingMessageContainer.length == 0) {
+    // for cases where it says "soon" instead of a time on page load
+    return 0;
+  }
+  var message = jQuery(".robin-message--message", remainingMessageContainer).text();
+  var time = new Date(jQuery(".robin--user-class--system:contains('approx') .robin-message--timestamp").attr("datetime"));
+  try {
+    var endTime = addMins(time, message.match(/\d+/)[0]);
+    return Math.floor((endTime - new Date()) / 60 / 1000 * 10) / 10;
+  } catch (e) {
+    return 0;
+  }
+
+  //grab the timestamp from the first post and then calc the difference using the estimate it gives you on boot
+}
+
 function updateCounter(id, value) {
   $("#" + id).text(value);
 }
@@ -128,6 +159,31 @@ function checkSpam(message) {
 function update() {
   userCount = $("#robinUserList div").length;
   updateCounter("user-count", userCount);
+  updateCounter("time-left",howLongLeft());
+
+  jQuery.get("/robin/", function(a) {
+      var start = "{" + a.substring(a.indexOf("\"robin_user_list\": ["));
+      var end = start.substring(0, start.indexOf("}]") + 2) + "}";
+      list = JSON.parse(end).robin_user_list;
+      var increaseCount = list.filter(function(voter) {
+        return voter.vote === "INCREASE"
+      }).length;
+      var abandonCount = list.filter(function(voter) {
+        return voter.vote === "ABANDON"
+      }).length;
+      var novoteCount = list.filter(function(voter) {
+        return voter.vote === "NOVOTE"
+      }).length;
+      var continueCount = list.filter(function(voter) {
+        return voter.vote === "CONTINUE"
+      }).length;
+
+      //increase counters
+      updateCounter("vote-grow",increaseCount);
+      updateCounter("vote-stay",continueCount);
+      updateCounter("vote-abandon",abandonCount);
+      updateCounter("vote-abstain",novoteCount);
+  });
 }
 
 // Mutation observer for new messages
@@ -172,7 +228,7 @@ console.log("Robin-Assistant " + version + " enabled!");
 
 rewriteCSS();
 addOptions();
-addInfo();
+//addInfo(); collapsed into options (cleaner)
 update();
 
 // Auto-grow
@@ -183,7 +239,7 @@ setTimeout(function() {
   }
 }, 10000);
 
-// Update every 3 seconds
+// Update once a second
 setInterval(function() {
   update();
 }, 3000);
