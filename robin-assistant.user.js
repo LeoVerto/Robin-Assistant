@@ -33,6 +33,8 @@ var votesLastUpdated = 0;
 
 var startTime = new Date();
 
+var userBlacklist = ["OldenNips", "chapebrone"];
+
 var manualThaiList = ["̍", "̎", "̄", "̅", "̿", "̑", "̆", "̐", "͒", "͗", "\
 ", "͑", "̇", "̈", "̊", "͂", "̓", "̈́", "͊", "͋", "͌", "\
 ", "̃", "̂", "̌", "͐", "̀", "́", "̋", "̏", "̒", "̓", "\
@@ -217,7 +219,7 @@ function updateCounter(id, value) {
 }
 
 // Spam Filter
-function checkSpam(message) {
+function checkSpam(user, message) {
   // Check for 6 or more repetitions of the same character
   if (message.search(/(.)\1{5,}/) != -1) {
     filteredSpamCount += 1;
@@ -231,6 +233,14 @@ function checkSpam(message) {
       filteredNonAsciiCount += 1;
       updateCounter("filter-nonascii-counter", filteredNonAsciiCount);
       console.log("Blocked spam message (non-ASCII): " + message);
+      return true;
+    }
+  }
+
+  for (i = 0; i < userBlacklist.length; i++) {
+    if (user === userBlacklist[i]) {
+      updateCounter("filter-spam-counter", filteredSpamCount);
+      console.log("Blocked spam message (Blacklisted User): " + message);
       return true;
     }
   }
@@ -314,6 +324,7 @@ var observer = new MutationObserver(function(mutations) {
     if ($(added).hasClass("robin-message")) {
       var msg = added;
       var msgText = $(msg).find(".robin-message--message").text();
+      var msgUser = $(msg).find(".robin-message--from").text();
       //console.log(msgText)
 
       // Highlight messages containing own user name
@@ -340,7 +351,7 @@ var observer = new MutationObserver(function(mutations) {
 
       // Filter spam
       if (filterSpam) {
-        if (checkSpam(msgText)) {
+        if (checkSpam(msgUser, msgText)) {
           $(msg).remove();
         }
       }
