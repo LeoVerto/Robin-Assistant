@@ -4,7 +4,7 @@
 // @namespace   com.github.leoverto
 // @include     https://www.reddit.com/robin/
 // @include     https://www.reddit.com/robin
-// @version     1.6
+// @version     1.8
 // @author      LeoVerto, Wiiplay123, Getnamo
 // @grant       none
 // ==/UserScript==
@@ -12,7 +12,7 @@
 var autoVote = true;
 var disableVoteMsgs = true;
 var filterSpam = true;
-var version = "1.6";
+var version = "1.8";
 
 var ownName = $('.user a').text();
 var spamCount = 0;
@@ -27,16 +27,22 @@ var votes = {
   action: 'Unknown'
 }
 
+var votesLastUpdated = 0;
+
+var spamBlacklist = [
+
 
 var startTime = new Date();
 
-var spamBlacklist = ["autovote", "staying", "group to stay", "pasta",
+var spamBlacklist = [
+  "ຈل͜ຈ", "hail the", "autovoter", "staying",
+  "group to stay", "pasta","autovote", "staying", "group to stay", "pasta",
   "automatically voted", "stayers are betrayers", "stayers aint players",
   "mins remaining. status", ">>>>>>>>>>>>>>>>>>>>>>>",
   "TRUMPSBUTTPIRATES2016", "TRUMPSFIERYPOOPS2016",
   "ALL HAIL THE TACO BELL BOT", "#420","้","็","◕_◕",
   "<<<<<<<<<<<<<<<<<<<<<<", "growing is all we know", "f it ends on you",
-  "timecube", "( ͡° ͜ʖ ͡°)"
+  "timecube", "\( ͡° ͜ʖ ͡°\)", "◕", "guys can you please not spam the chat"
 ];
 
 function rewriteCSS() {
@@ -211,6 +217,13 @@ function update() {
 
 // Triggered whenever someone votes
 function updateVotes() {
+  // Cancel if updated during last 10 seconds
+  if (Date.now() - votesLastUpdated < 10000) {
+    return false;
+  }
+
+  console.log("Updating vote tally...");
+  refs/remotes/origin/usercount
   jQuery.get("/robin/", function(a) {
     var start = "{" + a.substring(a.indexOf("\"robin_user_list\": ["));
     var end = start.substring(0, start.indexOf("}]") + 2) + "}";
@@ -228,23 +241,22 @@ function updateVotes() {
       return voter.vote === "NOVOTE"
     }).length;
 
-    var majority = userCount/2;
-    if(votes.grow>majority){
+    var majority = userCount / 2;
+    if (votes.grow > majority) {
       votes.action = "Grow";
-    }
-    else if(votes.stay>majority){
+    } else if (votes.stay > majority) {
       votes.action = "Stay";
-    }
-    else if(votes.abandon>majority){
+    } else if (votes.abandon > majority) {
       votes.action = "Abandon";
-    }
-    else if(votes.abstain>majority){
+    } else if (votes.abstain > majority) {
       votes.action = "Abstain";
-    }
-    else{
+    } else {
       vote.action = "No majority";
     }
   });
+
+  votesLastUpdated = Date.now();
+  return true;
 }
 
 // Mutation observer for new messages
@@ -314,4 +326,8 @@ setTimeout(function() {
 // Update every 3 seconds
 setInterval(function() {
   update();
+  // Update votes at least every 30 seconds
+  if (Date.now - votesLastUpdated > 30000) {
+    updateVotes();
+  }
 }, 3000);
