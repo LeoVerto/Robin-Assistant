@@ -1,10 +1,10 @@
 // ==UserScript==
 // @name        Robin Assistant
-// @description How may I be of assisante, sir?
+// @description Growth in peace
 // @namespace   com.github.leoverto
 // @include     https://www.reddit.com/robin/
 // @include     https://www.reddit.com/robin
-// @version     1.1
+// @version     1.2
 // @author      LeoVerto, Wiiplay123
 // @grant       none
 // ==/UserScript==
@@ -12,9 +12,12 @@
 var autoVote = true;
 var disableVoteMsgs = true;
 var filterSpam = true;
-var version = "1.1";
+var version = "1.2";
 
-var spamBlacklist = ["autovoter", "staying", "group to stay", "pasta",
+var spamCount = 0;
+var voteCount = 0;
+
+var spamBlacklist = ["autovote", "staying", "group to stay", "pasta",
   "automatically voted", "stayers are betrayers", "stayers aint players",
   "mins remaining. status", ">>>>>>>>>>>>>>>>>>>>>>>",
   "<<<<<<<<<<<<<<<<<<<<<<", "growing is all we know", "f it ends on you",
@@ -22,7 +25,7 @@ var spamBlacklist = ["autovoter", "staying", "group to stay", "pasta",
 ];
 
 function rewriteCSS() {
-  $(".robin-chat--body").css({"height":"auto"});
+  $(".robin-chat--body").css({"height":"100%"});
 }
 
 function sendMessage(msg) {
@@ -42,11 +45,11 @@ function addOptions() {
   var header = "<b style=\"font-size: 14px;\">Robin-Assistant " + version + " Configuration</b>"
 
   var autoVoteOption = createCheckbox("auto-vote",
-    "Automatically vote Grow", autoVote, autoVoteListener);
+    "Automatically vote Grow", autoVote, autoVoteListener, false);
   var voteMsgOption = createCheckbox("disable-vote-msgs",
-    "Hide Vote Messages", disableVoteMsgs, disableVoteMsgsListener);
+    "Hide Vote Messages", disableVoteMsgs, disableVoteMsgsListener, true);
   var filterSpamOption = createCheckbox("filter-spam",
-    "Filter common spam", filterSpam, filterSpamListener);
+    "Filter common spam", filterSpam, filterSpamListener, true);
 
   $(customOptions).insertAfter("#robinDesktopNotifier");
   $(customOptions).append(header);
@@ -56,7 +59,7 @@ function addOptions() {
 }
 
 
-function createCheckbox(name, description, checked, listener) {
+function createCheckbox(name, description, checked, listener, counter) {
   var label = document.createElement("label");
 
   var checkbox = document.createElement("input");
@@ -69,6 +72,11 @@ function createCheckbox(name, description, checked, listener) {
 
   label.appendChild(checkbox);
   label.appendChild(description);
+
+  if (counter) {
+    var counter = "&nbsp;Blocked: <span id=\"" + name + "-counter\">0</span>";
+    $(label).append(counter);
+  }
 
   return label;
 }
@@ -95,10 +103,16 @@ function filterSpamListener(event) {
   }
 }
 
+function updateCounter(id, value) {
+  $("#" + id).text(value);
+}
+
 // Spam Filter
 function checkSpam(message) {
   for (o = 0; o < spamBlacklist.length; o++) {
     if (message.toLowerCase().search(spamBlacklist[o]) != -1) {
+      spamCount += 1;
+      updateCounter("filter-spam-counter", spamCount);
       return true;
     }
   }
@@ -136,7 +150,7 @@ observer.observe($("#robinChatMessageList").get(0), {
   childList: true
 });
 
-console.log("Robin-Assistant " + version + " enabled!")
+console.log("Robin-Assistant " + version + " enabled!");
 
 // Auto-grow
 setTimeout(function() {
