@@ -25,7 +25,8 @@ var spamBlacklist = ["autovote", "staying", "group to stay", "pasta",
 ];
 
 function rewriteCSS() {
-  $(".robin-chat--body").css({"height":"100%"});
+  //Don't expand chat, bad stuff
+  //$(".robin-chat--body").css({"height":"100%"});
 }
 
 function sendMessage(msg) {
