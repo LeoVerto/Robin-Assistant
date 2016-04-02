@@ -15,8 +15,8 @@ var filterSpam = true;
 var version = "1.6";
 
 var ownName = $('.user a').text();
-var spamCount = 0;
-var voteCount = 0;
+var filteredSpamCount = 0;
+var filteredVoteCount = 0;
 var userCount = 0;
 
 var votes = {
@@ -26,7 +26,7 @@ var votes = {
   abstain: 0
 }
 
-var spamBlacklist = ["autovote", "staying", "group to stay", "pasta",
+var spamBlacklist = ["autovoter", "staying", "group to stay", "pasta",
   "automatically voted", "stayers are betrayers", "stayers aint players",
   "mins remaining. status", ">>>>>>>>>>>>>>>>>>>>>>>",
   "TRUMPSBUTTPIRATES2016", "TRUMPSFIERYPOOPS2016",
@@ -61,8 +61,8 @@ function addOptions() {
 
   var autoVoteOption = createCheckbox("auto-vote",
     "Automatically vote Grow", autoVote, autoVoteListener, false);
-  var voteMsgOption = createCheckbox("disable-vote-msgs",
-    "Hide Vote Messages", disableVoteMsgs, disableVoteMsgsListener, true);
+  var voteMsgOption = createCheckbox("filter-votes",
+    "Filter Vote Messages", disableVoteMsgs, disableVoteMsgsListener, true);
   var filterSpamOption = createCheckbox("filter-spam",
     "Filter common spam", filterSpam, filterSpamListener, true);
 
@@ -107,7 +107,7 @@ function createCheckbox(name, description, checked, listener, counter) {
   label.appendChild(description);
 
   if (counter) {
-    var counter = "&nbsp;Blocked: <span id=\"" + name + "-counter\">0</span>";
+    var counter = "&nbsp;Filtered: <span id=\"" + name + "-counter\">0</span>";
     $(label).append(counter);
   }
 
@@ -160,10 +160,17 @@ function updateCounter(id, value) {
 
 // Spam Filter
 function checkSpam(message) {
+  // Check for 6 or more repetitions of the same character
+  if (message.search(/(.)\1{5,}/) != -1) {
+    filteredSpamCount += 1;
+    updateCounter("filter-spam-counter", filteredSpamCount);
+    return true;
+  }
+
   for (o = 0; o < spamBlacklist.length; o++) {
     if (message.toLowerCase().search(spamBlacklist[o]) != -1) {
-      spamCount += 1;
-      updateCounter("filter-spam-counter", spamCount);
+      filteredSpamCount += 1;
+      updateCounter("filter-spam-counter", filteredSpamCount);
       return true;
     }
   }
@@ -185,6 +192,7 @@ function update() {
 
 // Triggered whenever someone votes
 function updateVotes() {
+  console.log("Updating vote tally...");
   jQuery.get("/robin/", function(a) {
     var start = "{" + a.substring(a.indexOf("\"robin_user_list\": ["));
     var end = start.substring(0, start.indexOf("}]") + 2) + "}";
@@ -198,7 +206,7 @@ function updateVotes() {
     votes.abandon = list.filter(function(voter) {
       return voter.vote === "ABANDON"
     }).length;
-    votes.abstain = novoteCount = list.filter(function(voter) {
+    votes.abstain = list.filter(function(voter) {
       return voter.vote === "NOVOTE"
     }).length;
   });
@@ -225,12 +233,13 @@ var observer = new MutationObserver(function(mutations) {
       }
 
       // Filter vote messages
-      if ($(msg).hasClass("robin--message-class--action") && msgText.startsWith(
-          "voted to ")) {
-        updateVote();
+      if (msgText.startsWith("voted to ")) {
         if (disableVoteMsgs) {
           $(msg).remove();
+          filteredVoteCount += 1;
+          updateCounter("filter-votes-counter", filteredVoteCount);
         }
+        updateVotes();
       }
 
       // Filter spam
