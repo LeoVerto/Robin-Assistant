@@ -12,11 +12,13 @@
 var autoVote = true;
 var disableVoteMsgs = true;
 var filterSpam = true;
+var filterNonAscii = true;
 var version = "1.9";
 
 var ownName = $('.user a').text();
 var filteredSpamCount = 0;
 var filteredVoteCount = 0;
+var filteredNonAsciiCount = 0;
 var userCount = 0;
 
 var votes = {
@@ -31,7 +33,21 @@ var votesLastUpdated = 0;
 
 var startTime = new Date();
 
-var spamBlacklist = [
+var manualThaiList = ["̍", "̎", "̄", "̅", "̿", "̑", "̆", "̐", "͒", "͗", "\
+", "͑", "̇", "̈", "̊", "͂", "̓", "̈́", "͊", "͋", "͌", "\
+", "̃", "̂", "̌", "͐", "̀", "́", "̋", "̏", "̒", "̓", "\
+", "̔", "̽", "̉", "ͣ", "ͤ", "ͥ", "ͦ", "ͧ", "ͨ", "ͩ", "\
+", "ͪ", "ͫ", "ͬ", "ͭ", "ͮ", "ͯ", "̾", "͛", "͆", "̚", "\
+", "̕", "̛", "̀", "́", "͘", "̡", "̢", "̧", "̨", "̴", "\
+", "̵", "̶", "͏", "͜", "͝", "͞", "͟", "͠", "͢", "̸", "\
+", "̷", "͡", "҉", "\
+", "̖", "̗", "̘", "̙", "̜", "̝", "̞", "̟", "̠", "̤", "\
+", "̥", "̦", "̩", "̪", "̫", "̬", "̭", "̮", "̯", "̰", "\
+", "̱", "̲", "̳", "̹", "̺", "̻", "̼", "ͅ", "͇", "͈", "\
+", "͉", "͍", "͎", "͓", "͔", "͕", "͖", "͙", "͚", "̣", "\
+"];
+
+var spamBlacklist = ["spam the most used",
   "ຈل͜ຈ", "hail the", "autovoter", "staying", "﷽", "group to stay", "pasta",
   "automatically voted", "stayers are betrayers", "stayers aint players",
   "mins remaining. status", ">>>>>>>>>>>>>>>>>>>>>>>",
@@ -40,6 +56,8 @@ var spamBlacklist = [
   "<<<<<<<<<<<<<<<<<<<<<<", "growing is all we know", "f it ends on you",
   "timecube", "\( ͡° ͜ʖ ͡°\)", "◕", "guys can you please not spam the chat"
 ];
+
+var nonEnglishSpamRegex = "[^\x00-\x7F]+";
 
 function rewriteCSS() {
   $(".robin-chat--body").css({
@@ -71,6 +89,8 @@ function addOptions() {
     "Filter Vote Messages", disableVoteMsgs, disableVoteMsgsListener, true);
   var filterSpamOption = createCheckbox("filter-spam",
     "Filter common spam", filterSpam, filterSpamListener, true);
+  var filterNonAsciiOption = createCheckbox("filter-nonascii",
+    "Filter non-ascii", filterNonAscii, filterNonAsciiListener, true);
 
   var userCounter =
     "<br><span style=\"font-size: 14px;\">Users here: <span id=\"user-count\">0</span></span>";
@@ -92,6 +112,7 @@ function addOptions() {
   $(customOptions).append(autoVoteOption);
   $(customOptions).append(voteMsgOption);
   $(customOptions).append(filterSpamOption);
+  $(customOptions).append(filterNonAsciiOption);
   $(customOptions).append(userCounter);
   $(customOptions).append(voteGrow);
   $(customOptions).append(voteStay);
@@ -142,6 +163,12 @@ function filterSpamListener(event) {
   }
 }
 
+function filterNonAsciiListener(event) {
+  if (event !== undefined) {
+    filterNonAscii = $(event.target).is(":checked");
+  }
+}
+
 function addMins(date, mins) {
   var newDateObj = new Date(date.getTime() + mins * 60000);
   return newDateObj;
@@ -188,13 +215,23 @@ function checkSpam(message) {
   if (message.search(/(.)\1{5,}/) != -1) {
     filteredSpamCount += 1;
     updateCounter("filter-spam-counter", filteredSpamCount);
+    console.log("Blocked spam message (Repetition): " + message);
     return true;
+  }
+
+  if(filterNonAscii){
+    if(message.match(nonEnglishSpamRegex)){
+      updateCounter("filter-nonascii-counter", filteredNonAsciiCount);
+      console.log("Blocked spam message (non-ASCII): " + message);
+      return true;
+    }
   }
 
   for (o = 0; o < spamBlacklist.length; o++) {
     if (message.toLowerCase().search(spamBlacklist[o]) != -1) {
       filteredSpamCount += 1;
       updateCounter("filter-spam-counter", filteredSpamCount);
+      console.log("Blocked spam message (Blacklist): " + message);
       return true;
     }
   }
@@ -203,7 +240,6 @@ function checkSpam(message) {
 
 // Generic updates
 function update() {
-
   updateCounter("time-left", howLongLeft());
 
   // update vote counters
@@ -287,6 +323,7 @@ var observer = new MutationObserver(function(mutations) {
         updateVotes();
         if (disableVoteMsgs) {
           $(msg).remove();
+          console.log("Blocked spam message (Voting): " + message);
           filteredVoteCount += 1;
           updateCounter("filter-votes-counter", filteredVoteCount);
         }
