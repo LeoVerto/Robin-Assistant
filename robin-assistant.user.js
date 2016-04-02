@@ -27,14 +27,17 @@ var votes = {
   action: 'Unknown'
 }
 
-var spamBlacklist = ["ຈل͜ຈ","hail the","autovoter", "staying", "group to stay", "pasta",
+var votesLastUpdated = 0;
+
+var spamBlacklist = ["ຈل͜ຈ", "hail the", "autovoter", "staying",
+  "group to stay", "pasta",
   "automatically voted", "stayers are betrayers", "stayers aint players",
   "mins remaining. status", ">>>>>>>>>>>>>>>>>>>>>>>",
   "TRUMPSBUTTPIRATES2016", "TRUMPSFIERYPOOPS2016",
   "ALL HAIL THE TACO BELL BOT", "#420",
   "<<<<<<<<<<<<<<<<<<<<<<", "growing is all we know", "f it ends on you",
-  "timecube", "( ͡° ͜ʖ ͡°)","◕",
-  "guys can you please not spam the chat","[nsfwrobinbot]","[cat fact]"
+  "timecube", "( ͡° ͜ʖ ͡°)", "◕",
+  "guys can you please not spam the chat", "[nsfwrobinbot]", "[cat fact]"
 ];
 
 function rewriteCSS() {
@@ -199,6 +202,11 @@ function update() {
 
 // Triggered whenever someone votes
 function updateVotes() {
+  // Cancel if updated during last 10 seconds
+  if (Date.now() - votesLastUpdated < 10000) {
+    return false;
+  }
+
   console.log("Updating vote tally...");
   jQuery.get("/robin/", function(a) {
     var start = "{" + a.substring(a.indexOf("\"robin_user_list\": ["));
@@ -217,23 +225,22 @@ function updateVotes() {
       return voter.vote === "NOVOTE"
     }).length;
 
-    var majority = userCount/2;
-    if(votes.grow>majority){
+    var majority = userCount / 2;
+    if (votes.grow > majority) {
       votes.action = "Grow";
-    }
-    else if(votes.stay>majority){
+    } else if (votes.stay > majority) {
       votes.action = "Stay";
-    }
-    else if(votes.abandon>majority){
+    } else if (votes.abandon > majority) {
       votes.action = "Abandon";
-    }
-    else if(votes.abstain>majority){
+    } else if (votes.abstain > majority) {
       votes.action = "Abstain";
-    }
-    else{
+    } else {
       vote.action = "No majority";
     }
   });
+
+  votesLastUpdated = Date.now();
+  return true;
 }
 
 // Mutation observer for new messages
@@ -299,4 +306,8 @@ setTimeout(function() {
 // Update every 3 seconds
 setInterval(function() {
   update();
+  // Update votes at least every 30 seconds
+  if (Date.now - votesLastUpdated > 30000) {
+    updateVotes();
+  }
 }, 3000);
