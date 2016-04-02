@@ -48,15 +48,16 @@ var manualThaiList = ["̍", "̎", "̄", "̅", "̿", "̑", "̆", "̐", "͒", "͗"
 "];
 
 var spamBlacklist = ["spam the most used",
-  "ຈل͜ຈ", "hail", "autovoter", "staying", "﷽", "group to stay", "pasta",
+  "ຈل͜ຈ", "hail", "autovoter", "﷽", "group to stay", "pasta", "robinplus",
   "automatically voted", "stayers are betrayers", "stayers aint players",
   "mins remaining. status", ">>>>", "trump", "#420", "้", "็", "◕_◕",
   "<<<<", "growing is all we know", "f it ends on you", "heil", "hitler",
   "timecube", "\( ͡° ͜ʖ ͡°\)", "◕", "guys can you please not spam the chat",
   "ｍｅｍｅｓ ｏｆ ｃａｐｉｔａｌｉｓｍ", "𝐁𝐄𝐑𝐍𝐈𝐄 𝐒𝐀𝐍𝐃𝐌𝐀𝐍", "█▄█▄",  "卐",
   "spam the most used phrase", "moob hunter", "someone in chat annoying",
-  "cool ppl list", "can't beat me", "smexy", "my ruler", "bean", "current standings",
-  "numbers & tits", "numbers and tits"
+  "cool ppl list", "can't beat me", "smexy", "my ruler", "bean",
+  "current standings", "numbers & tits", "numbers and tits", "nigglets",
+  "voting will end"
 ];
 
 var nonEnglishSpamRegex = "[^\x00-\x7F]+";
