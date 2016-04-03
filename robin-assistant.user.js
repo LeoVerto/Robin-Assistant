@@ -39,7 +39,7 @@ var votesLastUpdated = 0;
 var startTime = new Date();
 
 // Spam filter config
-var userWhitelist = ["nbagf"]
+var userWhitelist = ["nbagf", "maurycy0", "Leo_Verto", "getnamo"]
 var userBlacklist = ["OldenNips", "chapebrone"];
 
 var manualThaiList = ["̍", "̎", "̄", "̅", "̿", "̑", "̆", "̐", "͒", "͗", "\
@@ -74,6 +74,8 @@ var spamBlacklist = ["spam the most used",
 var nonEnglishSpamRegex = "[^\x00-\x7F]+";
 
 var phraseUsage = {};
+
+window.phr = phraseUsage;
 
 var dynamicBlacklist = [];
 
@@ -415,9 +417,9 @@ var observer = new MutationObserver(function(mutations) {
       // Add message to database
       var strippedMsgText = msgText.replace(/^\s+|\s+$/g, '');
       if (phraseUsage.hasOwnProperty(strippedMsgText) {
-        phraseUsage[strippedMsgText] = [phraseUsage[strippedMsgText][0] + 1, Date.now()] // Increase count and refresh timestamp
+        phraseUsage[strippedMsgText] = [phraseUsage[strippedMsgText][0] + 1, Date.now()]; // Increase count and refresh timestamp
       } else {
-        phraseUsage[strippedMsgText] = [1, Date.now()]
+        phraseUsage[strippedMsgText] = [1, Date.now()];
       }
 
       // Highlight messages containing own user name
