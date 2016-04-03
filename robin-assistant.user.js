@@ -32,14 +32,14 @@ var votes = {
   abandon: 0,
   abstain: 0,
   action: 'Unknown'
-}
+};
 
 var useStorage = false;
 var votesLastUpdated = 0;
 var startTime = new Date();
 
 // Spam filter config
-var userWhitelist = ["nbagf", "maurycy0", "Leo_Verto", "getnamo"]
+var userWhitelist = ["nbagf", "maurycy0", "Leo_Verto", "getnamo"];
 var userBlacklist = ["OldenNips", "chapebrone"];
 
 var manualThaiList = ["̍", "̎", "̄", "̅", "̿", "̑", "̆", "̐", "͒", "͗", "\
@@ -98,7 +98,7 @@ function loadConfig() {
     if (localStorage.getItem("robin-assistant-config") !== null) {
       var newConfig = JSON.parse(localStorage.getItem("robin-assistant-config"));
       // Config might have been saved by older version of script with less options
-      for (property in config) {
+      for (var property in config) {
         if (newConfig[property] !== undefined) {
           config[property] = newConfig[property];
         }
@@ -112,7 +112,7 @@ function loadConfig() {
 function writeConfig() {
   if (useStorage) {
     localStorage.setItem("robin-assistant-config", JSON.stringify(config));
-    console.log("Saving config...")
+    console.log("Saving config...");
   }
 }
 
@@ -132,7 +132,7 @@ function addOptions() {
     "robin-chat--sidebar-widget robin-chat--notification-widget";
 
   var header = "<b style=\"font-size: 14px;\">Robin-Assistant " + version +
-    " Configuration</b>"
+    " Configuration</b>";
 
   var autoVoteGrow = createRadio("auto-vote", "auto-vote-grow",
     "Automatically vote \"Grow\"", config.autoVote, autoVoteListener);
@@ -179,7 +179,7 @@ function addOptions() {
     voteAbstain,
     nextAction,
     timer
-  )
+  );
 }
 
 function createCheckbox(name, description, checked, listener, counter) {
@@ -368,16 +368,16 @@ function updateVotes() {
     var end = start.substring(0, start.indexOf("}]") + 2) + "}";
     list = JSON.parse(end).robin_user_list;
     votes.grow = list.filter(function(voter) {
-      return voter.vote === "INCREASE"
+      return voter.vote === "INCREASE";
     }).length;
     votes.stay = list.filter(function(voter) {
-      return voter.vote === "CONTINUE"
+      return voter.vote === "CONTINUE";
     }).length;
     votes.abandon = list.filter(function(voter) {
-      return voter.vote === "ABANDON"
+      return voter.vote === "ABANDON";
     }).length;
     votes.abstain = list.filter(function(voter) {
-      return voter.vote === "NOVOTE"
+      return voter.vote === "NOVOTE";
     }).length;
 
     var majority = userCount / 2;
@@ -413,10 +413,10 @@ var observer = new MutationObserver(function(mutations) {
       if ($(msg).hasClass("robin--user-class--system")) {
         systemMessage = true;
       }
-      
+        
       // Add message to database
       var strippedMsgText = msgText.replace(/^\s+|\s+$/g, '');
-      if (phraseUsage.hasOwnProperty(strippedMsgText) {
+      if (phraseUsage.hasOwnProperty(strippedMsgText)) {
         phraseUsage[strippedMsgText] = [phraseUsage[strippedMsgText][0] + 1, Date.now()]; // Increase count and refresh timestamp
       } else {
         phraseUsage[strippedMsgText] = [1, Date.now()];
