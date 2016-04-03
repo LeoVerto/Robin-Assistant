@@ -64,13 +64,13 @@ var spamBlacklist = ["spam the most used",
   "mins remaining. status", ">>>>", "trump", "#420", "้", "็", "◕_◕",
   "<<<<", "growing is all we know", "f it ends on you", "heil", "hitler",
   "timecube", "\( ͡° ͜ʖ ͡°\)", "◕", "guys can you please not spam the chat",
-  "ｍｅｍｅｓ ｏｆ ｃａｐｉｔａｌｉｓｍ", "𝐁𝐄𝐑𝐍𝐈𝐄 𝐒𝐀𝐍𝐃𝐌𝐀𝐍", "█▄█▄",  "卐",
+  "ｍｅｍｅｓ ｏｆ ｃａｐｉｔａｌｉｓｍ", "𝐁𝐄𝐑𝐍𝐈𝐄 𝐒𝐀𝐍𝐃𝐌𝐀𝐍", "█▄█▄", "卐",
   "spam the most used phrase", "moob hunter", "someone in chat annoying",
   "cool ppl list", "can't beat me", "smexy", "my ruler", "bean", "nsfw",
   "current standings", "numbers & tits", "numbers and tits", "nigglets",
   "voting will end", "madden", "peaman", "turn off your bots", "zoeq",
   "stay to win", "nigger", "nomorespam", "digest before sleeping",
-  "channel stats", "the best the best"
+  "channel stats", "the best the best", "redrobin"
 ];
 
 var nonEnglishSpamRegex = "[^\x00-\x7F]+";
@@ -308,7 +308,7 @@ function checkSpam(user, message) {
   }
 
   if (config.filterNonAscii){
-    if (message.match(nonEnglishSpamRegex)){
+    if (message.match(nonEnglishSpamRegex)) {
       filteredNonAsciiCount += 1;
       updateCounter("filter-nonascii-counter", filteredNonAsciiCount);
       console.log("Blocked spam message (non-ASCII): " + message);
