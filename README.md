@@ -8,7 +8,7 @@ Robin-Assistant is a neat userscript for [reddit robin](https://www.reddit.com/r
 * Extensive **spam message and user blacklist**
 * Filter repetition spam, messages containing non-ASCII characters
 * Displays user count, tally and current vote outcome
-* Configuration options for everything!
+* **Persistent config** options for everything!
 * Chat and user list use the **entire available site height**
 * **Highlight** messages containing your name (thanks to /u/rlemon, who made [this](https://gist.github.com/rlemon/cc13cb4c31861e5d5ba2a92bfc920aeb) great script)
 * Automatically try to rejoin, if kicked out of robin (again, thanks to /u/rlemon)
