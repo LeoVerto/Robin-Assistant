@@ -423,7 +423,7 @@ var observer = new MutationObserver(function(mutations) {
         updateVotes();
         if (config.filterVoteMsgs) {
           $(msg).remove();
-          console.log("Blocked spam message (Voting): " + message);
+          console.log("Blocked spam message (Voting): " + msgText);
           filteredVoteCount += 1;
           updateCounter("filter-votes-counter", filteredVoteCount);
         }
