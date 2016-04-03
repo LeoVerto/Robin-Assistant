@@ -5,12 +5,12 @@
 // @include     https://www.reddit.com/robin/
 // @include     https://www.reddit.com/robin
 // @updateURL   https://raw.githubusercontent.com/LeoVerto/Robin-Assistant/master/robin-assistant.user.js
-// @version     1.15
+// @version     1.16
 // @author      LeoVerto, Wiiplay123, Getnamo, K2L8M11N2
 // @grant       none
 // ==/UserScript==
 
-var version = "1.15";
+var version = "1.16";
 
 var config = {
   autoVote: "auto-vote-grow",
