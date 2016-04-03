@@ -71,7 +71,7 @@ var spamBlacklist = ["spam the most used",
   "current standings", "numbers & tits", "numbers and tits", "nigglets",
   "voting will end", "madden", "peaman", "turn off your bots", "zoeq",
   "stay to win", "nigger", "nomorespam", "digest before sleeping",
-  "channel stats", "the best the best", "redrobin"
+  "channel stats", "the best the best", "redrobin", "arya"
 ];
 
 var nonEnglishSpamRegex = "[^\x00-\x7F]+";
