@@ -9,11 +9,14 @@
 // @grant       none
 // ==/UserScript==
 
-var autoVote = true;
-var filterVoteMsgs = true;
-var filterSpam = true;
-var filterNonAscii = true;
 var version = "1.12";
+
+var config = {
+  autoVote: true,
+  filterVoteMsgs: true,
+  filterSpam: true,
+  filterNonAscii: true
+}
 
 var ownName = $('.user a').text();
 var filteredSpamCount = 0;
@@ -29,10 +32,11 @@ var votes = {
   action: 'Unknown'
 }
 
+var useStorage = false;
 var votesLastUpdated = 0;
-
 var startTime = new Date();
 
+// Spam filter config
 var userBlacklist = ["OldenNips", "chapebrone"];
 
 var manualThaiList = ["̍", "̎", "̄", "̅", "̿", "̑", "̆", "̐", "͒", "͗", "\
@@ -60,7 +64,7 @@ var spamBlacklist = ["spam the most used",
   "cool ppl list", "can't beat me", "smexy", "my ruler", "bean", "nsfw",
   "current standings", "numbers & tits", "numbers and tits", "nigglets",
   "voting will end", "john madden", "peaman", "turn off your bots",
-  "stay to win"
+  "stay to win", "nigger"
 ];
 
 var nonEnglishSpamRegex = "[^\x00-\x7F]+";
@@ -74,6 +78,38 @@ function rewriteCSS() {
 function sendMessage(msg) {
   $(".text-counter-input")[0].value = msg;
   $(".text-counter-input")[0].nextSibling.click();
+}
+
+// Config
+function loadConfig() {
+  if(typeof(Storage) !== "undefined") {
+    useStorage = true;
+
+    if (localStorage.getItem("robin-assistant-config") !== null) {
+      var newConfig = JSON.parse(localStorage.getItem("robin-assistant-config"));
+
+      // Config might have been saved by older version of script with less options
+      for (property in config) {
+        if (newConfig.property !== undefined) {
+          config.property = newConfig.property;
+        }
+      }
+
+      console.log("Loaded config!");
+    }
+  }
+}
+
+function writeConfig() {
+  if (useStorage) {
+    localStorage.setItem("robin-assistant-config", JSON.stringify(config));
+    console.log("Saving config...")
+  }
+}
+
+function updateConfigVar(variable, value) {
+  config[variable] = value;
+  writeConfig();
 }
 
 // Custom options
@@ -90,16 +126,16 @@ function addOptions() {
     " Configuration</b>"
 
   var autoVoteOption = createCheckbox("auto-vote",
-    "Automatically vote Grow", autoVote, autoVoteListener, false);
+    "Automatically vote Grow", config.autoVote, autoVoteListener, false);
 
   var filters = "<b style=\"font-size: 13px;\">Filters</b>"
 
   var filterVotesOption = createCheckbox("filter-votes",
-    "Vote Messages", filterVoteMsgs, disableVoteMsgsListener, true);
+    "Vote Messages", config.filterVoteMsgs, disableVoteMsgsListener, true);
   var filterSpamOption = createCheckbox("filter-spam",
-    "Common spam", filterSpam, filterSpamListener, true);
+    "Common spam", config.filterSpam, filterSpamListener, true);
   var filterNonAsciiOption = createCheckbox("filter-nonascii",
-    "Non-ascii", filterNonAscii, filterNonAsciiListener, true);
+    "Non-ascii", config.filterNonAscii, filterNonAsciiListener, true);
 
   var userCounter =
     "<br><span style=\"font-size: 14px;\">Users here: <span id=\"user-count\">0</span></span>";
@@ -154,28 +190,45 @@ function createCheckbox(name, description, checked, listener, counter) {
   return label;
 }
 
+function createRadio(name, description, checked, listener) {
+  var label = document.createElement("label");
+
+  var checkbox = document.createElement("input");
+  checkbox.name = name;
+  checkbox.type = "radio";
+  checkbox.onclick = listener;
+  $(checkbox).prop("checked", checked);
+
+  var description = document.createTextNode(description);
+
+  label.appendChild(checkbox);
+  label.appendChild(description);
+
+  return label;
+}
+
 // Listeners
 function disableVoteMsgsListener(event) {
   if (event !== undefined) {
-    filterVoteMsgs = $(event.target).is(":checked");
+    updateConfigVar("filterVoteMsgs", $(event.target).is(":checked"));
   }
 }
 
 function autoVoteListener(event) {
   if (event !== undefined) {
-    autoVote = $(event.target).is(":checked");
+    updateConfigVar("autoVote", $(event.target).is(":checked"));
   }
 }
 
 function filterSpamListener(event) {
   if (event !== undefined) {
-    filterSpam = $(event.target).is(":checked");
+    updateConfigVar("filterSpam", $(event.target).is(":checked"));
   }
 }
 
 function filterNonAsciiListener(event) {
   if (event !== undefined) {
-    filterNonAscii = $(event.target).is(":checked");
+    updateConfigVar("filterNonAscii", $(event.target).is(":checked"));
   }
 }
 
@@ -229,7 +282,7 @@ function checkSpam(user, message) {
     return true;
   }
 
-  if(filterNonAscii){
+  if(config.filterNonAscii){
     if(message.match(nonEnglishSpamRegex)){
       filteredNonAsciiCount += 1;
       updateCounter("filter-nonascii-counter", filteredNonAsciiCount);
@@ -341,7 +394,7 @@ var observer = new MutationObserver(function(mutations) {
       if ($(msg).hasClass("robin--message-class--action") && msgText.startsWith(
           "voted to ")) {
         updateVotes();
-        if (filterVoteMsgs) {
+        if (config.filterVoteMsgs) {
           $(msg).remove();
           console.log("Blocked spam message (Voting): " + message);
           filteredVoteCount += 1;
@@ -351,7 +404,7 @@ var observer = new MutationObserver(function(mutations) {
       }
 
       // Filter spam
-      if (filterSpam) {
+      if (config.filterSpam) {
         if (checkSpam(msgUser, msgText)) {
           $(msg).remove();
         }
@@ -377,6 +430,7 @@ function checkError() {
 // Main run
 console.log("Robin-Assistant " + version + " enabled!");
 
+loadConfig();
 rewriteCSS();
 addOptions();
 updateVotes();
@@ -390,7 +444,7 @@ function fetchTimeIntervals() {
 
 // Auto-grow
 setTimeout(function() {
-  if (autoVote) {
+  if (config.autoVote) {
     $(".robin--vote-class--increase")[0].click();
     console.log("Voting grow!");
   }
