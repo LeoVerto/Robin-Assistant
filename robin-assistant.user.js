@@ -39,7 +39,7 @@ var votesLastUpdated = 0;
 var startTime = new Date();
 
 // Spam filter config
-var userWhitelist = ["nbagf","dthunder"]
+var userWhitelist = ["nbagf", "dthunder"]
 var userBlacklist = ["OldenNips", "chapebrone"];
 var userHighlight = ["dthunder"];
 
