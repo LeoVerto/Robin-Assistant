@@ -15,6 +15,7 @@ Robin-Assistant is a neat userscript for [reddit robin](https://www.reddit.com/r
 * **Error page detection** and automatic reload
 * Fresh room detection and subsequently switching to auto-grow
 * **Only keep 200 most recent messages** to prevent memory leaking
+* **Channel filter** for up to five different prefixes, hides messages instead of deleting them!
 
 [![screenshot](https://raw.githubusercontent.com/LeoVerto/Robin-Assistant/dev/screenshot.png)](#screenshot)
 
