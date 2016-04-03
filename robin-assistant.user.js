@@ -13,7 +13,7 @@
 var version = "1.13";
 
 var config = {
-  autoVote: true,
+  autoVote: "auto-vote-grow",
   filterVoteMsgs: true,
   filterSpam: true,
   filterNonAscii: true
@@ -65,8 +65,9 @@ var spamBlacklist = ["spam the most used",
   "spam the most used phrase", "moob hunter", "someone in chat annoying",
   "cool ppl list", "can't beat me", "smexy", "my ruler", "bean", "nsfw",
   "current standings", "numbers & tits", "numbers and tits", "nigglets",
-  "voting will end", "john madden", "peaman", "turn off your bots",
-  "stay to win", "nigger"
+  "voting will end", "madden", "peaman", "turn off your bots", "zoeq",
+  "stay to win", "nigger", "nomorespam", "digest before sleeping",
+  "channel stats"
 ];
 
 var nonEnglishSpamRegex = "[^\x00-\x7F]+";
@@ -89,11 +90,10 @@ function loadConfig() {
 
     if (localStorage.getItem("robin-assistant-config") !== null) {
       var newConfig = JSON.parse(localStorage.getItem("robin-assistant-config"));
-
       // Config might have been saved by older version of script with less options
       for (property in config) {
-        if (newConfig.property !== undefined) {
-          config.property = newConfig.property;
+        if (newConfig[property] !== undefined) {
+          config[property] = newConfig[property];
         }
       }
 
@@ -127,13 +127,15 @@ function addOptions() {
   var header = "<b style=\"font-size: 14px;\">Robin-Assistant " + version +
     " Configuration</b>"
 
-  var autoVoteOption = createCheckbox("auto-vote",
-    "Automatically vote Grow", config.autoVote, autoVoteListener, false);
+  var autoVoteGrow = createRadio("auto-vote", "auto-vote-grow",
+    "Automatically vote \"Grow\"", config.autoVote, autoVoteListener);
+  var autoVoteStay = createRadio("auto-vote", "auto-vote-stay",
+    "Automatically vote \"Stay\"", config.autoVote, autoVoteListener);
 
   var filters = "<b style=\"font-size: 13px;\">Filters</b>"
 
   var filterVotesOption = createCheckbox("filter-votes",
-    "Vote Messages", config.filterVoteMsgs, disableVoteMsgsListener, true);
+    "Vote Messages", config.filterVoteMsgs, filterVotesListener, true);
   var filterSpamOption = createCheckbox("filter-spam",
     "Common spam", config.filterSpam, filterSpamListener, true);
   var filterNonAsciiOption = createCheckbox("filter-nonascii",
@@ -155,19 +157,22 @@ function addOptions() {
     "<br><i><span id=\"next-action\" style=\"font-size: 14px;\">Unknown</span></i>";
 
   $(customOptions).insertAfter("#robinDesktopNotifier");
-  $(customOptions).append(header);
-  $(customOptions).append(autoVoteOption);
-  $(customOptions).append(filters);
-  $(customOptions).append(filterVotesOption);
-  $(customOptions).append(filterSpamOption);
-  $(customOptions).append(filterNonAsciiOption);
-  $(customOptions).append(userCounter);
-  $(customOptions).append(voteGrow);
-  $(customOptions).append(voteStay);
-  $(customOptions).append(voteAbandon);
-  $(customOptions).append(voteAbstain);
-  $(customOptions).append(nextAction);
-  $(customOptions).append(timer);
+  $(customOptions).append(
+    header,
+    autoVoteGrow,
+    autoVoteStay,
+    filters,
+    filterVotesOption,
+    filterSpamOption,
+    filterNonAsciiOption,
+    userCounter,
+    voteGrow,
+    voteStay,
+    voteAbandon,
+    voteAbstain,
+    nextAction,
+    timer
+  )
 }
 
 function createCheckbox(name, description, checked, listener, counter) {
@@ -175,6 +180,7 @@ function createCheckbox(name, description, checked, listener, counter) {
 
   var checkbox = document.createElement("input");
   checkbox.name = name;
+  checkbox.id = name;
   checkbox.type = "checkbox";
   checkbox.onclick = listener;
   $(checkbox).prop("checked", checked);
@@ -192,35 +198,41 @@ function createCheckbox(name, description, checked, listener, counter) {
   return label;
 }
 
-function createRadio(name, description, checked, listener) {
+function createRadio(name, id, description, selectedRadio, listener) {
   var label = document.createElement("label");
 
-  var checkbox = document.createElement("input");
-  checkbox.name = name;
-  checkbox.type = "radio";
-  checkbox.onclick = listener;
-  $(checkbox).prop("checked", checked);
+  var radio = document.createElement("input");
+  radio.name = name;
+  radio.id = id;
+  radio.type = "radio";
+  radio.onclick = listener;
+  if (selectedRadio === id) {
+    console.log("Radio button selected " + id);
+    $(radio).prop("checked", true);
+  }
 
   var description = document.createTextNode(description);
 
-  label.appendChild(checkbox);
+  label.appendChild(radio);
   label.appendChild(description);
 
   return label;
 }
 
 // Listeners
-function disableVoteMsgsListener(event) {
+function autoVoteListener(event) {
+  if (event !== undefined) {
+    updateConfigVar("autoVote", $(event.target).attr("id"));
+    vote();
+  }
+}
+
+function filterVotesListener(event) {
   if (event !== undefined) {
     updateConfigVar("filterVoteMsgs", $(event.target).is(":checked"));
   }
 }
 
-function autoVoteListener(event) {
-  if (event !== undefined) {
-    updateConfigVar("autoVote", $(event.target).is(":checked"));
-  }
-}
 
 function filterSpamListener(event) {
   if (event !== undefined) {
@@ -424,6 +436,16 @@ observer.observe($("#robinChatMessageList").get(0), {
   childList: true
 });
 
+function vote() {
+  if (config.autoVote === "auto-vote-grow") {
+    $(".robin--vote-class--increase")[0].click();
+    console.log("Voting grow!");
+  } else {
+    $(".robin--vote-class--continue")[0].click();
+    console.log("Voting stay!");
+  }
+}
+
 // Checks whether room name is not empty
 function checkError() {
   if($(".robin-chat--room-name").text().length == 0) {
@@ -450,12 +472,14 @@ function fetchTimeIntervals() {
     "\\d+");
 }
 
-// Auto-grow
+// Auto-vote
 setTimeout(function() {
-  if (config.autoVote) {
-    $(".robin--vote-class--increase")[0].click();
-    console.log("Voting grow!");
+  // Check whether we are in a fresh room
+  if ($(".robin-chat--room-name").text().length < 20) {
+    // Reset auto-vote to grow
+    updateConfigVar("autoVote", "auto-vote-grow");
   }
+  vote();
 }, 10000);
 
 // Update every 3 seconds
