@@ -17,8 +17,9 @@ var config = {
   filterVoteMsgs: true,
   filterSpam: true,
   filterNonAscii: true,
-  keepMessageCount: 200,
-  keepOnlyRecent: true
+  keepMessageCount: 500,
+  keepOnlyRecent: true,
+  channelPrefixes: []
 }
 
 var ownName = $("#header-bottom-right .user a").first().text();
@@ -135,8 +136,11 @@ function addOptions() {
   var autoVoteStay = createRadio("auto-vote", "auto-vote-stay",
     "Automatically vote \"Stay\"", config.autoVote, autoVoteListener);
   var keepOnlyRecentOption = createCheckbox("keep-only-recent",
-    "Keep only the most recent 200 messages", config.keepOnlyRecent,
+    "Keep only the most recent 500 messages", config.keepOnlyRecent,
     keepOnlyRecentListener, false)
+  var channelPrefixes = createTextbox("channel-prefixes",
+    "Prefixes of channels to filter:", config.channelPrefixes.join(""),
+    channelPrefixesListener, 5)
 
   var filters = "<b style=\"font-size: 13px;\">Filters</b>"
 
@@ -168,6 +172,7 @@ function addOptions() {
     autoVoteGrow,
     autoVoteStay,
     keepOnlyRecentOption,
+    channelPrefixes,
     filters,
     filterVotesOption,
     filterSpamOption,
@@ -184,7 +189,6 @@ function addOptions() {
 
 function createCheckbox(name, description, checked, listener, counter) {
   var label = document.createElement("label");
-
   var checkbox = document.createElement("input");
   checkbox.name = name;
   checkbox.id = name;
@@ -201,27 +205,44 @@ function createCheckbox(name, description, checked, listener, counter) {
     var counter = "&nbsp;Filtered: <span id=\"" + name + "-counter\">0</span>";
     $(label).append(counter);
   }
-
   return label;
 }
 
 function createRadio(name, id, description, selectedRadio, listener) {
   var label = document.createElement("label");
-
   var radio = document.createElement("input");
   radio.name = name;
   radio.id = id;
   radio.type = "radio";
   radio.onclick = listener;
   if (selectedRadio === id) {
-    console.log("Radio button selected " + id);
     $(radio).prop("checked", true);
   }
 
+  var description = "<span>" + description + "</span>";
+
+  $(label).append(description);
+  label.appendChild(radio);
+
+  return label;
+}
+
+function createTextbox(name, description, value, listener, size) {
+  var label = document.createElement("label");
+  var textbox = document.createElement("input");
+  textbox.name = name;
+  textbox.id = name;
+  textbox.type = "text";
+  textbox.value = value;
+  $(textbox).change(listener);
+  textbox.maxLength = size;
+  textbox.size = size;
+
+
   var description = document.createTextNode(description);
 
-  label.appendChild(radio);
   label.appendChild(description);
+  label.appendChild(textbox);
 
   return label;
 }
@@ -237,6 +258,29 @@ function autoVoteListener(event) {
 function keepOnlyRecentListener(event) {
   if (event !== undefined) {
     updateConfigVar("keepOnlyRecent", $(event.target).is(":checked"));
+  }
+}
+
+function channelPrefixesListener(event) {
+  if (event !== undefined) {
+    var prefixes = $(event.target).val().split("");
+    updateConfigVar("channelPrefixes", prefixes);
+
+    console.log("HELLO");
+
+    // This might be a bit laggy, but we only keep 500 messages
+    $("#robinChatMessageList div").each(function () {
+      var msgText = $(this).find(".robin-message--message").text();
+      if (prefixes.length == 0) {
+        $(this).show();
+      } else if (checkPrefix(msgText)) {
+        console.log("SHOW!");
+        $(this).show();
+      } else {
+        console.log("HIDE!");
+        $(this).hide();
+      }
+    });
   }
 }
 
@@ -297,6 +341,19 @@ function howLongLeft() { // mostly from /u/Yantrio
 
 function updateCounter(id, value) {
   $("#" + id).text(value);
+}
+
+// Channel Filter
+
+function checkPrefix(message) {
+  var prefixes = config.channelPrefixes;
+  for (i = 0; i < prefixes.length; i++) {
+    // Use startsWith to not deal with unescaped regex
+    if (message.startsWith(prefixes[i])) {
+      return true;
+    }
+  }
+  return false;
 }
 
 // Spam Filter
@@ -404,58 +461,69 @@ function updateVotes() {
   return true;
 }
 
+function processMessage(msg) {
+  var msgText = $(msg).find(".robin-message--message").text();
+  var msgUser = $(msg).find(".robin-message--from").text();
+  var systemMessage = false;
+
+  if ($(msg).hasClass("robin--user-class--system")) {
+    systemMessage = true;
+  }
+
+  // Highlight messages containing own user name
+  var re = new RegExp(ownName, "i");
+  if (msgText.match(re)) {
+    $(msg).css({
+      background: 'rgba(255, 0, 0, 0.3)',
+      color: '#242424'
+    });
+  }
+
+  //Highlight messages containing specific user
+  for (i = 0; i < userHighlight.length; i++) {
+    if (msgUser === userHighlight[i]) {
+      $(msg).css({
+        background: 'rgba(60, 180, 20, 0.3)',
+        color: '#242424'
+      });
+    }
+  }
+
+  // Filter vote messages
+  if ($(msg).hasClass("robin--message-class--action") && msgText.startsWith(
+      "voted to ")) {
+    updateVotes();
+    if (config.filterVoteMsgs) {
+      $(msg).remove();
+      console.log("Blocked spam message (Voting): " + msgText);
+      filteredVoteCount += 1;
+      updateCounter("filter-votes-counter", filteredVoteCount);
+    }
+    updateVotes();
+  }
+
+  // Filter spam
+  if (!systemMessage && checkSpam(msgUser, msgText)) {
+    $(msg).remove();
+    return;
+  }
+
+  // Filter channels
+  if (config.channelPrefixes.length > 0) {
+    if (!checkPrefix(msgText)) {
+      $(msg).hide();
+    }
+  }
+}
+
 // Mutation observer for new messages
 var observer = new MutationObserver(function(mutations) {
   mutations.forEach(function(mutation) {
     var added = mutation.addedNodes[0];
 
-    // Filters all new messages
+    // Processes all new messages
     if ($(added).hasClass("robin-message")) {
-      var msg = added;
-      var msgText = $(msg).find(".robin-message--message").text();
-      var msgUser = $(msg).find(".robin-message--from").text();
-      var systemMessage = false;
-
-      if ($(msg).hasClass("robin--user-class--system")) {
-        systemMessage = true;
-      }
-
-      // Highlight messages containing own user name
-      var re = new RegExp(ownName, "i");
-      if (msgText.match(re)) {
-        $(msg).css({
-          background: 'rgba(255, 0, 0, 0.3)',
-          color: '#242424'
-        });
-      }
-
-      //Highlight messages containing specific user
-      for (i = 0; i < userHighlight.length; i++) {
-        if (msgUser === userHighlight[i]) {
-          $(msg).css({
-            background: 'rgba(60, 180, 20, 0.3)',
-            color: '#242424'
-          });
-        }
-      }
-
-      // Filter vote messages
-      if ($(msg).hasClass("robin--message-class--action") && msgText.startsWith(
-          "voted to ")) {
-        updateVotes();
-        if (config.filterVoteMsgs) {
-          $(msg).remove();
-          console.log("Blocked spam message (Voting): " + msgText);
-          filteredVoteCount += 1;
-          updateCounter("filter-votes-counter", filteredVoteCount);
-        }
-        updateVotes();
-      }
-
-      // Filter spam
-      if (!systemMessage && checkSpam(msgUser, msgText)) {
-        $(msg).remove();
-      }
+      processMessage(added);
     }
   });
 });
