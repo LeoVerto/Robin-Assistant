@@ -77,8 +77,6 @@ var phraseUsage = {};
 
 window.phr = phraseUsage;
 
-var dynamicBlacklist = [];
-
 function rewriteCSS() {
   $(".robin-chat--body").css({
     "height": "80vh"
@@ -336,6 +334,13 @@ function checkSpam(user, message) {
       }
     }
   }
+  if (config.filterRepeated) {
+    var normalizedMessage = message.replace(/^\s+|\s+$/g, '');
+    if (phraseUsage[normalizedMessage][0] >= 5 && (Date.now() - phraseUsage[normalizedMsgText][2]) >= 30) {
+        console.log("Blocked spam message (Used too much): " + message);
+        return true;
+    }
+  }
   return false;
 }
 
@@ -415,11 +420,12 @@ var observer = new MutationObserver(function(mutations) {
       }
         
       // Add message to database
-      var strippedMsgText = msgText.replace(/^\s+|\s+$/g, '');
-      if (phraseUsage.hasOwnProperty(strippedMsgText)) {
-        phraseUsage[strippedMsgText] = [phraseUsage[strippedMsgText][0] + 1, Date.now()]; // Increase count and refresh timestamp
+      // [use count, last usage, first usage]
+      var normalizedMsgText = msgText.toLowerCase().replace(/^\s+|\s+$/g, '');
+      if (phraseUsage.hasOwnProperty(normalizedMsgText)) {
+        phraseUsage[normalizedMsgText] = [phraseUsage[normalizedMsgText][0] + 1, Date.now(), phraseUsage[normalizedMsgText][2]]; // Increase count and refresh timestamp
       } else {
-        phraseUsage[strippedMsgText] = [1, Date.now()];
+        phraseUsage[normalizedMsgText] = [1, Date.now(), Date.now()];
       }
 
       // Highlight messages containing own user name
