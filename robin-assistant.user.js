@@ -21,7 +21,7 @@ var config = {
   keepOnlyRecent: true
 }
 
-var ownName = $('.user a').text();
+var ownName = $("#header-bottom-right .user a").first().text();
 var filteredSpamCount = 0;
 var filteredVoteCount = 0;
 var filteredNonAsciiCount = 0;
