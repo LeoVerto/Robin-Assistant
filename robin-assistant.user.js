@@ -38,6 +38,7 @@ var votesLastUpdated = 0;
 var startTime = new Date();
 
 // Spam filter config
+var userWhitelist = ["[robin]", "nbagf"]
 var userBlacklist = ["OldenNips", "chapebrone"];
 
 var manualThaiList = ["̍", "̎", "̄", "̅", "̿", "̑", "̆", "̐", "͒", "͗", "\
@@ -275,6 +276,12 @@ function updateCounter(id, value) {
 
 // Spam Filter
 function checkSpam(user, message) {
+  for (i = 0; i < userWhitelist.length; i++) {
+    if (user === userWhitelist[i]) {
+      return false;
+    }
+  }
+
   // Check for 6 or more repetitions of the same character
   if (message.search(/(.)\1{5,}/) != -1) {
     filteredSpamCount += 1;
