@@ -32,4 +32,3 @@ Next open this [raw url](https://github.com/LeoVerto/Robin-Assistant/raw/master/
 * Use online spam blacklist
 * Add ratelimit counter
 * Add single-user mute
-* Auto-clear option
