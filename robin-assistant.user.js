@@ -336,7 +336,7 @@ function checkSpam(user, message) {
   }
   if (config.filterRepeated) {
     var normalizedMessage = message.replace(/^\s+|\s+$/g, '');
-    if (phraseUsage[normalizedMessage][0] >= 5 && (Date.now() - phraseUsage[normalizedMsgText][2]) >= 30) {
+    if (phraseUsage[normalizedMessage][0] >= 5 && (Date.now() - phraseUsage[normalizedMsgText][2]) >= 20) {
         console.log("Blocked spam message (Used too much): " + message);
         return true;
     }
@@ -485,6 +485,15 @@ function deleteOldMessages() {
   console.log("Removed " + removeMessageCount + " old messages.")
 }
 
+function purgePhrases() {
+  for (var i = 0; i < Object.keys(phraseUsage).length; i++) {
+    var key = Object.keys(phraseUsage)[i];
+    if (Date.now() - phraseUsage[key][1] >= 600) {
+      delete phraseUsage[key];
+    }
+  }
+}
+
 // Checks whether room name is not empty
 function checkError() {
   if($(".robin-chat--room-name").text().length == 0) {
@@ -524,6 +533,7 @@ setTimeout(function() {
 // Update every 3 seconds
 setInterval(function() {
   update();
+  purgePhrases();
   // Update votes at least every 30 seconds
   if (Date.now - votesLastUpdated > 30000) {
     updateVotes();
