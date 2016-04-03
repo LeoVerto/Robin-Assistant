@@ -73,6 +73,10 @@ var spamBlacklist = ["spam the most used",
 
 var nonEnglishSpamRegex = "[^\x00-\x7F]+";
 
+var phraseUsage = {};
+
+var dynamicBlacklist = [];
+
 function rewriteCSS() {
   $(".robin-chat--body").css({
     "height": "80vh"
@@ -406,6 +410,14 @@ var observer = new MutationObserver(function(mutations) {
 
       if ($(msg).hasClass("robin--user-class--system")) {
         systemMessage = true;
+      }
+      
+      // Add message to database
+      var strippedMsgText = msgText.replace(/^\s+|\s+$/g, '');
+      if (phraseUsage.hasOwnProperty(strippedMsgText) {
+        phraseUsage[strippedMsgText] = [phraseUsage[strippedMsgText][0] + 1, Date.now()] // Increase count and refresh timestamp
+      } else {
+        phraseUsage[strippedMsgText] = [1, Date.now()]
       }
 
       // Highlight messages containing own user name
