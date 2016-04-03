@@ -555,9 +555,10 @@ function deleteOldMessages() {
 
 // Checks whether room name is not empty
 function checkError() {
-  if($(".robin-chat--room-name").text().length == 0) {
-    // Something went wrong, hit reload after a 10 to 20 seconds!
+  if($("img[src='//www.redditstatic.com/trouble-afoot.jpg']").length > 0) {
+    // Were on a 503 page! Hit reload after a 10 to 20 seconds!
     var timeout = Math.floor((Math.random() * 10 ) + 10);
+    console.log("Hitting reload in " + timeout + " seconds!");
     setTimeout(function() {
       window.location.reload();
     }, timeout);
