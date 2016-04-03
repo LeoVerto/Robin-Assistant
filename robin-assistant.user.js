@@ -69,7 +69,7 @@ var spamBlacklist = ["spam the most used",
   "current standings", "numbers & tits", "numbers and tits", "nigglets",
   "voting will end", "madden", "peaman", "turn off your bots", "zoeq",
   "stay to win", "nigger", "nomorespam", "digest before sleeping",
-  "channel stats"
+  "channel stats", "the best the best"
 ];
 
 var nonEnglishSpamRegex = "[^\x00-\x7F]+";
@@ -417,7 +417,7 @@ var observer = new MutationObserver(function(mutations) {
           color: '#242424'
         });
       }
-      
+
       //Highlight messages containing specific user
       for (i = 0; i < userHighlight.length; i++) {
         if (msgUser === userHighlight[i]) {
@@ -472,7 +472,7 @@ function deleteOldMessages() {
   }
 
   // Remove all but most recent x messages, keep first four from robin
-  $("robinChatMessageList div").slice(3, removeMessageCount + 3).remove();
+  $("#robinChatMessageList div").slice(3, removeMessageCount + 3).remove();
   console.log("Removed " + removeMessageCount + " old messages.")
 }
 
