@@ -336,7 +336,7 @@ function checkSpam(user, message) {
   }
   if (config.filterRepeated) {
     var normalizedMessage = message.replace(/^\s+|\s+$/g, '');
-    if (phraseUsage[normalizedMessage][0] >= 5 && (Date.now() - phraseUsage[normalizedMsgText][2]) >= 20) {
+    if (phraseUsage[normalizedMessage][0] >= 5 && (Date.now() - phraseUsage[normalizedMsgText][2]) >= 20000) {
         console.log("Blocked spam message (Used too much): " + message);
         return true;
     }
@@ -488,7 +488,7 @@ function deleteOldMessages() {
 function purgePhrases() {
   for (var i = 0; i < Object.keys(phraseUsage).length; i++) {
     var key = Object.keys(phraseUsage)[i];
-    if (Date.now() - phraseUsage[key][1] >= 600) {
+    if (Date.now() - phraseUsage[key][1] >= 600000) {
       delete phraseUsage[key];
     }
   }
