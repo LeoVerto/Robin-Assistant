@@ -274,10 +274,8 @@ function channelPrefixesListener(event) {
       if (prefixes.length == 0) {
         $(this).show();
       } else if (checkPrefix(msgText)) {
-        console.log("SHOW!");
         $(this).show();
       } else {
-        console.log("HIDE!");
         $(this).hide();
       }
     });
