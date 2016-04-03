@@ -17,7 +17,7 @@ var config = {
   filterVoteMsgs: true,
   filterSpam: true,
   filterNonAscii: true,
-  keepMessageCount: 1000
+  keepMessageCount: 200
 }
 
 var ownName = $('.user a').text();
