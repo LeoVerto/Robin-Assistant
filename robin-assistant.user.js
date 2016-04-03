@@ -4,13 +4,13 @@
 // @namespace   com.github.leoverto
 // @include     https://www.reddit.com/robin/
 // @include     https://www.reddit.com/robin
-// @updateURL https://raw.githubusercontent.com/LeoVerto/Robin-Assistant/master/robin-assistant.user.js
-// @version     1.13
+// @updateURL   https://raw.githubusercontent.com/LeoVerto/Robin-Assistant/master/robin-assistant.user.js
+// @version     1.14
 // @author      LeoVerto, Wiiplay123, Getnamo, K2L8M11N2
 // @grant       none
 // ==/UserScript==
 
-var version = "1.13";
+var version = "1.14";
 
 var config = {
   autoVote: "auto-vote-grow",
