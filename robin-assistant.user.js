@@ -16,7 +16,8 @@ var config = {
   autoVote: "auto-vote-grow",
   filterVoteMsgs: true,
   filterSpam: true,
-  filterNonAscii: true
+  filterNonAscii: true,
+  keepMessageCount: 200
 }
 
 var ownName = $('.user a').text();
@@ -38,7 +39,7 @@ var votesLastUpdated = 0;
 var startTime = new Date();
 
 // Spam filter config
-var userWhitelist = ["[robin]", "nbagf"]
+var userWhitelist = ["nbagf"]
 var userBlacklist = ["OldenNips", "chapebrone"];
 
 var manualThaiList = ["̍", "̎", "̄", "̅", "̿", "̑", "̆", "̐", "͒", "͗", "\
@@ -294,16 +295,8 @@ function checkSpam(user, message) {
     }
   }
 
-  // Check for 6 or more repetitions of the same character
-  if (message.search(/(.)\1{5,}/) != -1) {
-    filteredSpamCount += 1;
-    updateCounter("filter-spam-counter", filteredSpamCount);
-    console.log("Blocked spam message (Repetition): " + message);
-    return true;
-  }
-
-  if(config.filterNonAscii){
-    if(message.match(nonEnglishSpamRegex)){
+  if (config.filterNonAscii){
+    if (message.match(nonEnglishSpamRegex)){
       filteredNonAsciiCount += 1;
       updateCounter("filter-nonascii-counter", filteredNonAsciiCount);
       console.log("Blocked spam message (non-ASCII): " + message);
@@ -311,20 +304,30 @@ function checkSpam(user, message) {
     }
   }
 
-  for (i = 0; i < userBlacklist.length; i++) {
-    if (user === userBlacklist[i]) {
-      updateCounter("filter-spam-counter", filteredSpamCount);
-      console.log("Blocked spam message (Blacklisted User): " + message);
-      return true;
-    }
-  }
-
-  for (o = 0; o < spamBlacklist.length; o++) {
-    if (message.toLowerCase().search(spamBlacklist[o]) != -1) {
+  if (config.filterSpam){
+    // Check for 6 or more repetitions of the same character
+    if (message.search(/(.)\1{5,}/) != -1) {
       filteredSpamCount += 1;
       updateCounter("filter-spam-counter", filteredSpamCount);
-      console.log("Blocked spam message (Blacklist): " + message);
+      console.log("Blocked spam message (Repetition): " + message);
       return true;
+    }
+
+    for (i = 0; i < userBlacklist.length; i++) {
+      if (user === userBlacklist[i]) {
+        updateCounter("filter-spam-counter", filteredSpamCount);
+        console.log("Blocked spam message (Blacklisted User): " + message);
+        return true;
+      }
+    }
+
+    for (o = 0; o < spamBlacklist.length; o++) {
+      if (message.toLowerCase().search(spamBlacklist[o]) != -1) {
+        filteredSpamCount += 1;
+        updateCounter("filter-spam-counter", filteredSpamCount);
+        console.log("Blocked spam message (Blacklist): " + message);
+        return true;
+      }
     }
   }
   return false;
@@ -399,7 +402,11 @@ var observer = new MutationObserver(function(mutations) {
       var msg = added;
       var msgText = $(msg).find(".robin-message--message").text();
       var msgUser = $(msg).find(".robin-message--from").text();
-      //console.log(msgText)
+      var systemMessage = false;
+
+      if ($(msg).hasClass("robin--user-class--system")) {
+        systemMessage = true;
+      }
 
       // Highlight messages containing own user name
       var re = new RegExp(ownName, "i");
@@ -424,10 +431,8 @@ var observer = new MutationObserver(function(mutations) {
       }
 
       // Filter spam
-      if (config.filterSpam) {
-        if (checkSpam(msgUser, msgText)) {
-          $(msg).remove();
-        }
+      if (!systemMessage && checkSpam(msgUser, msgText)) {
+        $(msg).remove();
       }
     }
   });
@@ -444,6 +449,20 @@ function vote() {
     $(".robin--vote-class--continue")[0].click();
     console.log("Voting stay!");
   }
+}
+
+function deleteOldMessages() {
+  var messageCount = $("#robinChatMessageList div").length;
+  var removeMessageCount = messageCount - config.keepMessageCount;
+
+  if (removeMessageCount < 10) {
+    console.log("Not enough messages to remove any (" + messageCount + ")");
+    return;
+  }
+
+  // Remove all but most recent x messages, keep first four from robin
+  $("robinChatMessageList div").slice(3, removeMessageCount + 3).remove();
+  console.log("Removed " + removeMessageCount + " old messages.")
 }
 
 // Checks whether room name is not empty
@@ -493,8 +512,11 @@ setInterval(function() {
   }
 }, 3000);
 
-// Try to join robin if not in a chat once a minute
+// Executed once a minute
 setInterval(function() {
+  deleteOldMessages();
+
+  // Attempt to join new robin room
   if ($("#joinRobinContainer".length)) {
     $("#joinRobinContainer.click()");
     setTimeout(function() {
