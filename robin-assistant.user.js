@@ -41,7 +41,7 @@ var startTime = new Date();
 // Spam filter config
 var userWhitelist = ["nbagf", "dthunder"]
 var userBlacklist = ["OldenNips", "chapebrone"];
-var userHighlight = ["dthunder"];
+var userHighlight = ["nbagf", "dthunder"];
 
 var manualThaiList = ["̍", "̎", "̄", "̅", "̿", "̑", "̆", "̐", "͒", "͗", "\
 ", "͑", "̇", "̈", "̊", "͂", "̓", "̈́", "͊", "͋", "͌", "\
