@@ -39,8 +39,9 @@ var votesLastUpdated = 0;
 var startTime = new Date();
 
 // Spam filter config
-var userWhitelist = ["nbagf"]
+var userWhitelist = ["nbagf", "dthunder"]
 var userBlacklist = ["OldenNips", "chapebrone"];
+var userHighlight = ["dthunder"];
 
 var manualThaiList = ["̍", "̎", "̄", "̅", "̿", "̑", "̆", "̐", "͒", "͗", "\
 ", "͑", "̇", "̈", "̊", "͂", "̓", "̈́", "͊", "͋", "͌", "\
@@ -415,6 +416,16 @@ var observer = new MutationObserver(function(mutations) {
           background: 'rgba(255, 0, 0, 0.3)',
           color: '#242424'
         });
+      }
+      
+      //Highlight messages containing specific user
+      for (i = 0; i < userHighlight.length; i++) {
+        if (msgUser === userHighlight[i]) {
+          $(msg).css({
+            background: 'rgba(60, 180, 20, 0.3)',
+            color: '#242424'
+          });
+        }
       }
 
       // Filter vote messages
