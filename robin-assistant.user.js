@@ -17,7 +17,8 @@ var config = {
   filterVoteMsgs: true,
   filterSpam: true,
   filterNonAscii: true,
-  keepMessageCount: 200
+  keepMessageCount: 200,
+  keepOnlyRecent: true
 }
 
 var ownName = $('.user a').text();
@@ -133,6 +134,9 @@ function addOptions() {
     "Automatically vote \"Grow\"", config.autoVote, autoVoteListener);
   var autoVoteStay = createRadio("auto-vote", "auto-vote-stay",
     "Automatically vote \"Stay\"", config.autoVote, autoVoteListener);
+  var keepOnlyRecentOption = createCheckbox("keep-only-recent",
+    "Keep only the most recent 200 messages", config.keepOnlyRecent,
+    keepOnlyRecentListener, false)
 
   var filters = "<b style=\"font-size: 13px;\">Filters</b>"
 
@@ -163,6 +167,7 @@ function addOptions() {
     header,
     autoVoteGrow,
     autoVoteStay,
+    keepOnlyRecentOption,
     filters,
     filterVotesOption,
     filterSpamOption,
@@ -226,6 +231,12 @@ function autoVoteListener(event) {
   if (event !== undefined) {
     updateConfigVar("autoVote", $(event.target).attr("id"));
     vote();
+  }
+}
+
+function keepOnlyRecentListener(event) {
+  if (event !== undefined) {
+    updateConfigVar("keepOnlyRecent", $(event.target).is(":checked"));
   }
 }
 
@@ -525,7 +536,9 @@ setInterval(function() {
 
 // Executed once a minute
 setInterval(function() {
-  deleteOldMessages();
+  if (config.keepOnlyRecent) {
+    deleteOldMessages();
+  }
 
   // Attempt to join new robin room
   if ($("#joinRobinContainer".length)) {
