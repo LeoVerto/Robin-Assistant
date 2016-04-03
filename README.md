@@ -3,7 +3,7 @@ Robin-Assistant is a neat userscript for [reddit robin](https://www.reddit.com/r
 
 ## Features
 
-* **Auto-vote** for growth
+* **Auto-vote for either grow or stay, you decide!** (Grow is the default)
 * **Filter vote messages**
 * Extensive **spam message and user blacklist**
 * Filter repetition spam, messages containing non-ASCII characters
@@ -13,6 +13,7 @@ Robin-Assistant is a neat userscript for [reddit robin](https://www.reddit.com/r
 * **Highlight** messages containing your name (thanks to /u/rlemon, who made [this](https://gist.github.com/rlemon/cc13cb4c31861e5d5ba2a92bfc920aeb) great script)
 * Automatically try to rejoin, if kicked out of robin (again, thanks to /u/rlemon)
 * **Error page detection** and automatic reload
+* Fresh room detection and subsequently switching to auto-grow
 
 [![screenshot](https://raw.githubusercontent.com/LeoVerto/Robin-Assistant/dev/screenshot.png)](#screenshot)
 
