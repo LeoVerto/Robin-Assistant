@@ -1,4 +1,5 @@
 # Changelog
+* 1.18 Fix 503 page detection
 * 1.17 Add channel filter for up to 5 different channels. Messages are temporarily hidden, not deleted.
 * 1.16 Fix regression in name highlighting
 * 1.15 Only keep 200 most recent messages. Basically works like clearing chat every few minutes except it doesn't hinder your experience!
