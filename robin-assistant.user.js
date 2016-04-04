@@ -2,6 +2,7 @@
 // @name        Robin Assistant
 // @description Growth in peace
 // @namespace   com.github.leoverto
+// @include     https://www.reddit.com/robin/join
 // @include     https://www.reddit.com/robin/
 // @include     https://www.reddit.com/robin
 // @updateURL   https://raw.githubusercontent.com/LeoVerto/Robin-Assistant/master/robin-assistant.user.js
@@ -21,6 +22,8 @@ var config = {
   keepOnlyRecent: true,
   channelPrefixes: []
 }
+
+var isChat = $("#robinChatMessageList").length != 0;
 
 var ownName = $("#header-bottom-right .user a").first().text();
 var filteredSpamCount = 0;
@@ -525,9 +528,10 @@ var observer = new MutationObserver(function(mutations) {
     }
   });
 });
-observer.observe($("#robinChatMessageList").get(0), {
-  childList: true
-});
+if ( isChat )
+    observer.observe($("#robinChatMessageList").get(0), {
+        childList: true
+    });
 
 function vote() {
   if (config.autoVote === "auto-vote-grow") {
@@ -568,10 +572,14 @@ function checkError() {
 console.log("Robin-Assistant " + version + " enabled!");
 
 loadConfig();
-rewriteCSS();
-addOptions();
-updateVotes();
-update();
+if ( isChat ) {
+    rewriteCSS();
+    addOptions();
+    updateVotes();
+    update();
+}
+else
+    console.log("Robin-Assistant: Not in a chat!");
 
 //Check for startup messages for timing
 function fetchTimeIntervals() {
@@ -607,8 +615,8 @@ setInterval(function() {
   }
 
   // Attempt to join new robin room
-  if ($("#joinRobinContainer".length)) {
-    $("#joinRobinContainer.click()");
+  if ($("#joinRobinContainer").length) {
+    $("#joinRobinContainer").click();
     setTimeout(function() {
       jQuery("#joinRobin").click();
     }, 1000);
