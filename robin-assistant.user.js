@@ -414,6 +414,31 @@ function update() {
   updateCounter("user-count", userCount);
 
   updateCounter("next-action", "Next round we will " + votes.action);
+
+  updateProfileLinks();
+}
+
+// convert usernames into links to user profile
+function updateProfileLinks() {
+    var curEl;
+    var newEl;
+    var curUser;
+    $('.robin-room-participant  .robin--username')
+        .each(function(i, val){
+            curEl = $(val);
+            curUser = curEl.text();
+            profile = 'http://www.reddit.com/u/' + curUser;
+            newEl = $('<a></a>')
+                .attr({
+                    'href': profile,
+                    'target': '_blank',
+                    'cursor': 'pointer'
+                })
+                .text(curUser);
+
+            curEl
+                .html(newEl);
+         });
 }
 
 // Triggered whenever someone votes
