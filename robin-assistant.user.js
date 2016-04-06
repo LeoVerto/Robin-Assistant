@@ -42,8 +42,8 @@ var startTime = new Date();
 
 // Spam filter config
 var userWhitelist = ["nbagf", "dthunder"]
-var userBlacklist = ["OldenNips", "chapebrone", "JohnMadden"];
-var userHighlight = ["nbagf", "dthunder"];
+var userBlacklist = ["OldenNips", "chapebrone", "JohnMadden", "katietheredhead", "Koi-pond", "ElectionBot", "SadZr40", "FNCxPro", "marakiri", "hamstamp"];
+var userHighlight = ["nbagf", "dthunder", "Too_MuchWhiskey"];
 
 var manualThaiList = ["̍", "̎", "̄", "̅", "̿", "̑", "̆", "̐", "͒", "͗", "\
 ", "͑", "̇", "̈", "̊", "͂", "̓", "̈́", "͊", "͋", "͌", "\
@@ -383,7 +383,7 @@ function checkSpam(user, message) {
     for (i = 0; i < userBlacklist.length; i++) {
       if (user === userBlacklist[i]) {
         updateCounter("filter-spam-counter", filteredSpamCount);
-        console.log("Blocked spam message (Blacklisted User): " + message);
+        console.log("Blocked spam message (Blacklisted User " +user+ "): " + message);
         return true;
       }
     }
@@ -459,9 +459,13 @@ function updateVotes() {
   return true;
 }
 
+var lastUser = "";
+
 function processMessage(msg) {
   var msgText = $(msg).find(".robin-message--message").text();
   var msgUser = $(msg).find(".robin-message--from").text();
+  if (msgUser == "") msgUser = lastUser;
+  else lastUser = msgUser;
   var systemMessage = false;
 
   if ($(msg).hasClass("robin--user-class--system")) {
