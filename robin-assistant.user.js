@@ -74,16 +74,10 @@ var spamBlacklist = ["spam the most used",
   "current standings", "numbers & tits", "numbers and tits", "nigglets",
   "voting will end", "madden", "peaman", "turn off your bots", "zoeq",
   "stay to win", "nigger", "nomorespam", "digest before sleeping",
-  "channel stats", "the best the best", "redrobin", "arya"
+  "channel stats", "the best the best", "redrobin", "arya", "r/praiserobin"
 ];
 
 var nonEnglishSpamRegex = "[^\x00-\x7F]+";
-
-function rewriteCSS() {
-  $(".robin-chat--body").css({
-    "height": "80vh"
-  });
-}
 
 function sendMessage(msg) {
   $(".text-counter-input")[0].value = msg;
@@ -107,6 +101,7 @@ function loadConfig() {
       console.log("Loaded config!");
     }
   }
+  updateFilters();
 }
 
 function writeConfig() {
@@ -119,74 +114,157 @@ function writeConfig() {
 function updateConfigVar(variable, value) {
   config[variable] = value;
   writeConfig();
+  updateFilters();
+}
+
+function updateFilters() {
+    var $b = $('BODY');
+    $b.removeClass("RA-filter-vote").removeClass("RA-filter-spam")
+        .removeClass("RA-filter-nonascii");
+    if ( config.filterVoteMsgs )
+        $b.addClass("RA-filter-vote");
+    if ( config.filterSpam )
+        $b.addClass("RA-filter-spam");
+    if ( config.filterNonAscii )
+        $b.addClass("RA-filter-nonascii");
+}
+
+// Custom appearance
+var css = [
+    // Use min-height on robin-chat for better mobile support
+    ".robin-chat--body { min-height: 80vh !important }",
+    // Display counters side-by-side like the buttons
+    ".RA-sidebar .RA-counters { font-size: 13px; display: -webkit-flex; display: flex }",
+    ".RA-sidebar .RA-counters .RA-counter { -webkit-flex: 1 1; flex: 1 1; margin: 5px 0;border-left: 1px solid black; }",
+    ".RA-sidebar .RA-counters .RA-counter:first-child { border: 0 !important }",
+    ".RA-sidebar .RA-counters .RA-counter .robin--icon { margin-right: 0 }",
+    // Define a vote icon for total votes
+    ".robin--vote-class--total .robin--icon { background-image: none !important; font-size: 18px; font-weight: bold; line-height: 18px; text-align: center }",
+    // Options panel at the bottom
+    "#RA-options { border-top: 1px solid #e3e3e0; padding: 3em 1em 1em; font-size: 14px }",
+    "#RA-options LABEL { display: block }",
+    "#RA-options LEGEND { font-weight: bold; margin-left: -1em }",
+    "#RA-options FIELDSET { padding-left: 1em }",
+    // Enhanced unread marker
+    ".RA-window-focus .RA-readmarker { border-bottom: 1px solid red; margin-bottom: -1px }",
+    // Let the browser do the filtering (and unfiltering)
+    ".RA-filter-vote .RA-msg-vote, .RA-filter-spam .RA-msg-spam, .RA-filter-nonascii .RA-msg-nonascii { display: none }",
+].join("\n");
+
+function rewriteCSS() {
+  $("#customCss").remove();
+  var customCss = document.createElement("style");
+  customCss.type = 'text/css';
+  customCss.id = 'customCss';
+  if (customCss.styleSheet) // From http://stackoverflow.com/a/524721/462117
+    customCss.styleSheet.cssText = css;
+  else
+    customCss.appendChild(document.createTextNode(css));
+  console.log(customCss);
+  var head = document.head || document.getElementsByTagName('head')[0];
+  console.log(head);
+  head.appendChild(customCss);
 }
 
 // Custom options
-function addOptions() {
+function addSidebar() {
   // Remove possible existing custom options
-  $("#customOptions").remove();
+  $("#RA-sidebar").remove();
 
-  var customOptions = document.createElement("div");
-  customOptions.id = "customOptions";
-  customOptions.className =
-    "robin-chat--sidebar-widget robin-chat--notification-widget";
+  var sidebar = document.createElement("div");
+  sidebar.id = "RA-sidebar";
+  sidebar.className =
+    "robin-chat--sidebar-widget robin-chat--notification-widget RA-sidebar";
 
   var header = "<b style=\"font-size: 14px;\">Robin-Assistant " + version +
-    " Configuration</b>"
-
-  var autoVoteGrow = createRadio("auto-vote", "auto-vote-grow",
-    "Automatically vote \"Grow\"", config.autoVote, autoVoteListener);
-  var autoVoteStay = createRadio("auto-vote", "auto-vote-stay",
-    "Automatically vote \"Stay\"", config.autoVote, autoVoteListener);
-  var keepOnlyRecentOption = createCheckbox("keep-only-recent",
-    "Keep only the most recent 500 messages", config.keepOnlyRecent,
-    keepOnlyRecentListener, false)
-  var channelPrefixes = createTextbox("channel-prefixes",
-    "Prefixes of channels to filter:", config.channelPrefixes.join(""),
-    channelPrefixesListener, 5)
-
-  var filters = "<b style=\"font-size: 13px;\">Filters</b>"
-
-  var filterVotesOption = createCheckbox("filter-votes",
-    "Vote Messages", config.filterVoteMsgs, filterVotesListener, true);
-  var filterSpamOption = createCheckbox("filter-spam",
-    "Common spam", config.filterSpam, filterSpamListener, true);
-  var filterNonAsciiOption = createCheckbox("filter-nonascii",
-    "Non-ascii", config.filterNonAscii, filterNonAsciiListener, true);
+    "</b>"
 
   var userCounter =
-    "<br><span style=\"font-size: 14px;\">Users here: <span id=\"user-count\">0</span></span>";
-  var voteGrow =
-    "<br><span style=\"font-size: 14px;\">Grow: <span id=\"vote-grow\">0</span></span>";
-  var voteStay =
-    "<br><span style=\"font-size: 14px;\">Stay: <span id=\"vote-stay\">0</span></span>";
-  var voteAbandon =
-    "<br><span style=\"font-size: 14px;\">Abandon: <span id=\"vote-abandon\">0</span></span>";
-  var voteAbstain =
-    "<br><span style=\"font-size: 14px;\">Abstain: <span id=\"vote-abstain\">0</span></span>";
+    "<div class=\"RA-counters\">";
+  var modes = [
+      ['user-count', 'total', 'Total'],
+      ['vote-grow', 'increase', 'Grow'],
+      ['vote-stay', 'continue', 'Stay'],
+      ['vote-abandon', 'abandon', 'Abandon'],
+      ['vote-abstain', 'novote', 'Abstain']
+  ];
+  for ( var i = 0; i < modes.length; i++ ) {
+    userCounter += "<div class=\"RA-counter robin--vote-class--" +
+          modes[i][1] + "\" title=\"" + modes[i][2] +
+          "\"><span class=\"robin--icon\">" +
+          (modes[i][1] == 'total' ? "Σ" : "") + "</span><span id=\"" +
+          modes[i][0] + "\">0</span></div>";
+  }
+  userCounter += "</div>";
   var timer =
-    "<br><span style=\"font-size: 14px;\">Time Left: <span id=\"time-left\">0</span></span>";
-  var nextAction =
-    "<br><i><span id=\"next-action\" style=\"font-size: 14px;\">Unknown</span></i>";
+    "<div style=\"font-size: 14px;\"><span id=\"next-action\" style=\"font-style: italic;\">Unknown</span> <div style=\"float: right\"><span id=\"time-left\">0</span></div></div>";
 
-  $(customOptions).insertAfter("#robinDesktopNotifier");
+  $(sidebar).insertAfter("#robinDesktopNotifier");
+  $(sidebar).append(
+    header,
+    userCounter,
+    timer
+  )
+
+}
+function addOptions() {
+  // Remove possible existing custom options
+  $("#RA-options").remove();
+
+  var customOptions = document.createElement("div");
+  customOptions.id = "RA-options";
+  var header = "<h1>Robin-Assistant " + version + " Configuration</h1>"
+
+
+  var autoVote = document.createElement("fieldset");
+  {
+      var autoVoteGrow = createRadio("auto-vote", "auto-vote-grow",
+        "\"Grow\"", config.autoVote, autoVoteListener);
+      var autoVoteStay = createRadio("auto-vote", "auto-vote-stay",
+        "\"Stay\"", config.autoVote, autoVoteListener);
+      $(autoVote).append(
+          "<legend>Automatically vote</legend>",
+          autoVoteGrow,
+          autoVoteStay
+      );
+  }
+  var options = document.createElement("fieldset");
+  {
+      var keepOnlyRecentOption = createCheckbox("keep-only-recent",
+        "Keep only the most recent 500 messages", config.keepOnlyRecent,
+        keepOnlyRecentListener, false)
+      var channelPrefixes = createTextbox("channel-prefixes",
+        "Prefixes of channels to filter:", config.channelPrefixes.join(""),
+        channelPrefixesListener, 5)
+      $(options).append(
+          "<legend>Options</legend>",
+          keepOnlyRecentOption,
+          channelPrefixes
+      );
+  }
+
+  var filters = document.createElement("fieldset");
+  {
+      var filterVotesOption = createCheckbox("filter-votes",
+        "Vote Messages", config.filterVoteMsgs, filterVotesListener, true);
+      var filterSpamOption = createCheckbox("filter-spam",
+        "Common spam", config.filterSpam, filterSpamListener, true);
+      var filterNonAsciiOption = createCheckbox("filter-nonascii",
+        "Non-ascii", config.filterNonAscii, filterNonAsciiListener, true);
+      $(filters).append(
+          "<legend>Filters</legend>",
+          filterVotesOption,
+          filterSpamOption,
+          filterNonAsciiOption
+      )
+  }
+
+  $(customOptions).insertAfter("#robinChat");
   $(customOptions).append(
     header,
-    autoVoteGrow,
-    autoVoteStay,
-    keepOnlyRecentOption,
-    channelPrefixes,
-    filters,
-    filterVotesOption,
-    filterSpamOption,
-    filterNonAsciiOption,
-    userCounter,
-    voteGrow,
-    voteStay,
-    voteAbandon,
-    voteAbstain,
-    nextAction,
-    timer
+    autoVote,
+    options,
+    filters
   )
 }
 
@@ -224,8 +302,8 @@ function createRadio(name, id, description, selectedRadio, listener) {
 
   var description = "<span>" + description + "</span>";
 
-  $(label).append(description);
   label.appendChild(radio);
+  $(label).append(description);
 
   return label;
 }
@@ -365,38 +443,22 @@ function checkSpam(user, message) {
     }
   }
 
-  if (config.filterNonAscii){
-    if (message.match(nonEnglishSpamRegex)) {
-      filteredNonAsciiCount += 1;
-      updateCounter("filter-nonascii-counter", filteredNonAsciiCount);
-      console.log("Blocked spam message (non-ASCII): " + message);
-      return true;
-    }
-  }
 
   if (config.filterSpam){
     // Check for 6 or more repetitions of the same character
     if (message.search(/(.)\1{5,}/) != -1) {
-      filteredSpamCount += 1;
-      updateCounter("filter-spam-counter", filteredSpamCount);
-      console.log("Blocked spam message (Repetition): " + message);
-      return true;
+      return "repetition";
     }
 
     for (i = 0; i < userBlacklist.length; i++) {
       if (user === userBlacklist[i]) {
-        updateCounter("filter-spam-counter", filteredSpamCount);
-        console.log("Blocked spam message (Blacklisted User): " + message);
-        return true;
+        return "blacklisted user";
       }
     }
 
     for (o = 0; o < spamBlacklist.length; o++) {
       if (message.toLowerCase().search(spamBlacklist[o]) != -1) {
-        filteredSpamCount += 1;
-        updateCounter("filter-spam-counter", filteredSpamCount);
-        console.log("Blocked spam message (Blacklist): " + message);
-        return true;
+        return "blacklist";
       }
     }
   }
@@ -462,6 +524,13 @@ function updateVotes() {
   return true;
 }
 
+/*
+var urlre = /([^-\/a-z0-9]|^)(\/?[ru]\/(?:reddit\.com|(?:t:)?[A-Za-z0-9_]+?)(?:\/[^\s">]+?)?|(?:(?:http|ftp|irc|steam|git|)s?:\/\/|www\.)[^\s">]+?)(?=[.?,;!:'"\])]*(?:\s|$))/ig;
+function url_linkify(match, p1, p2, offset, matchstr) {
+  return p1 + "<a href=\"" + p2 + "\" target=\"_blank\">" + p2 + "</a>";
+}
+*/
+
 function processMessage(msg) {
   var msgText = $(msg).find(".robin-message--message").text();
   var msgUser = $(msg).find(".robin-message--from").text();
@@ -490,23 +559,41 @@ function processMessage(msg) {
     }
   }
 
+    // Autolinking
+    /*
+  {
+      var newMsgText = msgText.replace(urlre, url_linkify);
+      if ( newMsgText != msgText ) {
+          msgText = newMsgText;
+          $(msg).find(".robin-message--message").text();
+  }
+*/
+
   // Filter vote messages
-  if ($(msg).hasClass("robin--message-class--action") && msgText.startsWith(
-      "voted to ")) {
+  if ( $(msg).hasClass("robin--message-class--action") &&
+       msgText.startsWith("voted to ") ) {
     updateVotes();
-    if (config.filterVoteMsgs) {
-      $(msg).remove();
-      console.log("Blocked spam message (Voting): " + msgText);
-      filteredVoteCount += 1;
-      updateCounter("filter-votes-counter", filteredVoteCount);
-    }
-    updateVotes();
+    $(msg).addClass("RA-msg-vote");
+    filteredVoteCount += 1;
+    console.log("Blocked spam message (voting): " + msgText);
+    updateCounter("filter-votes-counter", filteredVoteCount);
   }
 
   // Filter spam
-  if (!systemMessage && checkSpam(msgUser, msgText)) {
-    $(msg).remove();
-    return;
+  if ( !systemMessage ) {
+    var isSpam = checkSpam(msgUser, msgText);
+    if ( isSpam ) {
+      $(msg).addClass("RA-msg-spam");
+      filteredSpamCount += 1;
+      updateCounter("filter-spam-counter", filteredSpamCount);
+      console.log("Blocked spam message (" + isSpam + "): " + msgText);
+    }
+    else if ( msgText.match(nonEnglishSpamRegex) ) {
+      $(msg).addClass("RA-msg-nonascii");
+      filteredNonAsciiCount += 1;
+      updateCounter("filter-nonascii-counter", filteredNonAsciiCount);
+      console.log("Blocked spam message (non-ASCII): " + msgText);
+    }
   }
 
   // Filter channels
@@ -568,12 +655,24 @@ function checkError() {
   }
 }
 
+// Enhanced unread marker
+$(document).focus(function () {
+    $('BODY').addClass('RA-window-focus');
+    $('.robin-message:last').removeClass('RA-readmarker');
+}).blur(function () {
+    $('BODY').removeClass('RA-window-focus');
+    $('.robin-message').removeClass('RA-readmarker')
+        .filter(':last').addClass('RA-readmarker')
+});
+
+
 // Main run
 console.log("Robin-Assistant " + version + " enabled!");
 
 loadConfig();
 if ( isChat ) {
     rewriteCSS();
+    addSidebar();
     addOptions();
     updateVotes();
     update();
